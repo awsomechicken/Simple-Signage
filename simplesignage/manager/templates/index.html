@@ -1,0 +1,25 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="{% static 'css/master.css' %}">
+  </head>
+  <body>
+    <p class="p epoch">Unix Epoch: {{os}}</p>
+
+    <!--{%for file in File%}
+    <p><form method=POST target="./manager/{{url.apply}}" style="width:500"></p>
+    <li>{{file}}</li>
+    {%endfor%}-->
+
+    <div class="imagelist">
+      {% include "imagelist.html" %}
+    </div>
+  </body>
+  <footer>
+    <p>YOU: {{you}}</p>
+    <p>{{me}}</p>
+  </footer>
+</html>

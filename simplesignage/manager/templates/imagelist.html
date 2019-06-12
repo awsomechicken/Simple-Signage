@@ -1,0 +1,8 @@
+{% block imageList %}
+  <form class="form" action="apply_changes" method="post">
+    {% for file in File %}
+      <input type="checkbox" name="{{file}}" value="{{file}}">{{file}}<br>
+    {% endfor %}
+    <button type="submit" name="button">Apply Changes</button>
+  </form>
+{% endblock imageList %}

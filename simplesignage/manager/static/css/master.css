@@ -1,0 +1,31 @@
+p.epoch{
+  color: #382;
+}
+
+/*image list styling*/
+.imagelist{
+  background-color: #999;
+
+}
+
+form{
+  background-color: #0ff;
+}
+
+form.input{
+  color: #f00;
+}
+
+/*footer style*/
+footer{
+  background-color: #999;
+  border-radius: 3px;
+  height: 10mm;
+  width:99%;
+  position: absolute;
+  bottom: 5px;
+}
+
+footer::p{
+  left: 5mm;
+}
