@@ -1,0 +1,18 @@
+{% load static %}
+<footer class="f">
+  <div class="f status">
+    YOU: {{you}}<br>
+    {% if me %}
+    {{me}}<br>
+    {% else %}
+    Host IP Unavailable <br>
+    {% endif %}
+  </div>
+  <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
+  <div class="f fileup">{% csrf_token %}
+    <form class="" action="upload_file" method="post" target="_self">
+      <input type="file" name="fileupload" value="">
+      <input type="submit" name="filesubmit" value="Upload">
+    </form>
+  </div>
+</footer>

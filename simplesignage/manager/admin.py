@@ -5,7 +5,7 @@ from .models import Show, File, Page
 
 #admin.site.register(Show)
 #admin.site.register(Page)
-#admin.site.register(File)
+admin.site.register(File)
 
 class Files(admin.StackedInline):
     model = File

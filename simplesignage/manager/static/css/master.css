@@ -1,3 +1,7 @@
+*{
+  background-color: #444;
+}
+
 p.epoch{
   color: #382;
 }
@@ -5,27 +9,67 @@ p.epoch{
 /*image list styling*/
 .imagelist{
   background-color: #999;
-
 }
 
-form{
-  background-color: #0ff;
+.content{/*Form styling*/
+  background: inherit;
+  padding: 2mm;
+  padding-left: 6mm;
+  border: solid;
+  border-width: 1mm;
+  border-color: #666;
 }
-
-form.input{
+.content img{
+  display: inline-block;
+  height: 32.35mm;
+  width: 25mm;
+  object-fit: cover;
+  /*max-width: 25mm;*/
+  max-height: 32.35mm;
+  border-radius: 1mm;
+  float: left;
+  position: relative;
+}
+.content.settings{
+  display: inline-block;
+  border: none;
   color: #f00;
+}
+.content.settings.date{
+  color: #222;
+  background-color: #ddd;
+  border-radius: 2mm;
+  height: 3mm;
+}
+.content.submit{
+  /*padding: 3mm;*/
+  background-color: #ddd;
+  border-radius: 2mm;
+  border: none;
+  /*height: 10mm;*/
 }
 
 /*footer style*/
-footer{
-  background-color: #999;
-  border-radius: 3px;
-  height: 10mm;
-  width:99%;
-  position: absolute;
-  bottom: 5px;
+.f{
+  display: inline-grid;
+  grid-template-columns: 50% auto;
+  background-color: #888;
+  border-radius: 8px;
+  width:100%;
+  position: sticky;
+  bottom: 0px;
 }
 
-footer::p{
-  left: 5mm;
+.f.status{
+  grid-column: 2;
+  background-color: inherit;
+  text-align: left;
+  padding: 3mm;
+}
+
+.f.fileup{
+  grid-column: 1;
+  background-color: inherit;
+  text-align: left;
+  padding: 3mm;
 }
