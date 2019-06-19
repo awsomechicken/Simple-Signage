@@ -2,14 +2,14 @@
 {% block imageList %}
   <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
   <form action="apply_changes" method="post" target="_self">{% csrf_token %}
+    <!-- use static "content" prefix to the file -->
+    <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
+    <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
     {% for file in File %}
-      <!-- use static "content" prefix to the file -->
-        <!-- 'img':{'path':images[0],'use':False,'startDate':'2019-6-24','endDate':'2019-12-30','delete':False} -->
       <div class="content">
         <img src="{% static 'content' %}/{{file.path}}" alt="Image Not Found">
-
         <div class="content settings">
-          <input type="checkbox" name="{{file.path}}_use" value="{{file.use}}"><br>
+          Use File: <input type="checkbox" name="{{file.path}}_use" {% if file.use %}checked{% endif %}><br>
           Start Date:<br>
           <input type="date" class="content settings date" name="{{file.path}}_sdate" value="{{file.startDate}}"><br>
           End Date:<br>
@@ -17,10 +17,10 @@
         </div>
         <div class="content settings">
           Display Time:<br>
-          <input type="number" class="content settings date" name="dispTime" value="{{dispTime|default:15}}"><br>
+          <input type="number" class="content settings dt" name="{{file.path}}_dispTime" value="{{dispTime|default:15}}"> seconds<br>
+          Delete file on<br>end date: <input type="checkbox" name="{{file.path}}_deleteOnEnd" {% if file.deleteOnEnd %}checked{% endif %}><br>
         </div>
       </div>
-
     {% endfor %}
     <br>
     <input type="submit" class="content submit" value="Apply Changes" class="form submit">

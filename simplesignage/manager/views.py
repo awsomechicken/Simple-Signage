@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader, context
 from . import urls
-import os, time, datetime, json
+import os, time, datetime, json, random
 
 # Database implementation:
 # https://docs.djangoproject.com/en/2.2/intro/tutorial02/
 from manager.models import File, Show
 
 # Create your views here.
+#@login_required
 def index(request):
     resp = HttpResponse("Please Hold, Development in progress...")
     return resp
@@ -17,23 +18,36 @@ def index(request):
 def home(request):
     print("Home", str(request.META['REMOTE_ADDR']))
     # content is passed into render, and can be parsed by the template
-    print(len(urls.urlpatterns))
 
     content = getContent(request)
 
     return render(request, 'index.html', content)
 
 def upload_file(request):
-
-    print("file upload requested")
+    if request.method == 'POST':
+        g = request.FILES['fileupload'] # get the file the user sent
+        print("Length of files: ", len(g)) # see if there is data
+        handle_file(fdup_file = g) # do things with the file
+    print("file upload requested") # indform the log...
+    return redirect('.') # redirect to the top of the page (_self)
 
 # file handling functionality:
-def handle_file(request):
+def handle_file(fdup_file):
     # method to recieve and deal with files:
-    if request.method == 'POST' and request.FILES > 0:
-        print('I find file!')
-    else:
-        print('I no find file')
+    # > recieve and store
+    # > build database entry
+    print(fdup_file)
+    loc = "./manager/static/content/"+str(random.randrange(1,1800))+str(fdup_file).replace(' ','')
+
+    # make file:
+    #open(loc, 'x')
+
+    # rebuild data as the user said:
+    with open(loc, 'wb+') as dest:
+        for chunk in fdup_file.chunks():
+            dest.write(chunk)
+        #dest.close()
+    print("file uploaded, please add other database stuff")
 
 
 # Apply selection of images
@@ -65,10 +79,10 @@ def getContent(request):
         'you':rem_addr
     }
 
-    # get list of images
+    # get list of images, build web content
     images = os.listdir('./manager/static/content')
     for image in images: # fill images into the template
         content['File'].append({'path':image,'use':False,'startDate':'2019-06-24','endDate':'2019-12-30','deleteOnEnd':True})
 
-    print(content)
+    #print(content)
     return content

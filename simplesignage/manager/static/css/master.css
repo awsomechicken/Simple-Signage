@@ -1,5 +1,5 @@
-*{
-  background-color: #444;
+body{
+  background-color: #333;
 }
 
 p.epoch{
@@ -8,15 +8,15 @@ p.epoch{
 
 /*image list styling*/
 .imagelist{
-  background-color: #999;
+  background-color: inherit;
 }
 
 .content{/*Form styling*/
   background: inherit;
   padding: 2mm;
-  padding-left: 6mm;
-  border: solid;
-  border-width: 1mm;
+  padding-left: 2mm;
+  border-bottom: solid;
+  border-bottom-width: 2pt;
   border-color: #666;
 }
 .content img{
@@ -24,52 +24,60 @@ p.epoch{
   height: 32.35mm;
   width: 25mm;
   object-fit: cover;
-  /*max-width: 25mm;*/
   max-height: 32.35mm;
   border-radius: 1mm;
   float: left;
-  position: relative;
+  padding-left: 0;
 }
 .content.settings{
   display: inline-block;
   border: none;
   color: #f00;
+  padding-left: 2mm;
 }
 .content.settings.date{
   color: #222;
+  background-color: #ddd;
+  width: 100pt;
+  border-radius: 2mm;
+  height: 3mm;
+}
+.content.settings.dt{
+  color: #222;
+  width: 36pt;
   background-color: #ddd;
   border-radius: 2mm;
   height: 3mm;
 }
 .content.submit{
-  /*padding: 3mm;*/
   background-color: #ddd;
   border-radius: 2mm;
   border: none;
-  /*height: 10mm;*/
+}
+.content.submit:hover{
+  background-color: #bbb;
+  border-radius: 2mm;
+  border-color: #eee;
+  border-top: 2px;
+  border: none;
+}
+/*Hrule for */
+.horizrule{
+  background-color: #123;
+  height: 2px;
+  width: 100%;
 }
 
 /*footer style*/
-.f{
-  display: inline-grid;
-  grid-template-columns: 50% auto;
-  background-color: #888;
+footer{
+  background-color: #666;
   border-radius: 8px;
   width:100%;
   position: sticky;
   bottom: 0px;
+  top: 1mm;
 }
 
-.f.status{
-  grid-column: 2;
-  background-color: inherit;
-  text-align: left;
-  padding: 3mm;
-}
-
-.f.fileup{
-  grid-column: 1;
-  background-color: inherit;
-  text-align: left;
-  padding: 3mm;
+footer table{
+  width: 100%;
 }

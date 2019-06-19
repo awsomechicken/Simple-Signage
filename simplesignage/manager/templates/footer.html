@@ -1,18 +1,24 @@
 {% load static %}
-<footer class="f">
-  <div class="f status">
-    YOU: {{you}}<br>
-    {% if me %}
-    {{me}}<br>
-    {% else %}
-    Host IP Unavailable <br>
-    {% endif %}
-  </div>
-  <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
-  <div class="f fileup">{% csrf_token %}
-    <form class="" action="upload_file" method="post" target="_self">
-      <input type="file" name="fileupload" value="">
-      <input type="submit" name="filesubmit" value="Upload">
-    </form>
-  </div>
+<br>
+<footer>
+  <table >
+    <tr>
+      <td>
+        <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
+        Upload files drop: PNG, JPG, MP4, pdf, or zip file here:
+        <form action="upload_file" enctype="multipart/form-data" method="post" target="_self">{% csrf_token %}
+          <input type="file" name="fileupload" value="">
+          <input type="submit" name="filesubmit" value="Upload">
+        </form>
+      </td>
+      <td align="right">
+        YOU: {{you}}<br>
+        {% if me %}
+        {{me}}<br>
+        {% else %}
+        Host IP Unavailable <br>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
 </footer>
