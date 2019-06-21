@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader, context
+from django.contrib.auth.decorators import login_required
 from . import urls
 import os, time, datetime, json, random
 
@@ -15,6 +16,7 @@ def index(request):
     return resp
 
 # home / main data interface
+@login_required
 def home(request):
     print("Home", str(request.META['REMOTE_ADDR']))
     # content is passed into render, and can be parsed by the template
@@ -25,10 +27,11 @@ def home(request):
 
 def upload_file(request):
     if request.method == 'POST':
+        print("file upload requested") # indform the log...
         g = request.FILES['fileupload'] # get the file the user sent
         print("Length of files: ", len(g)) # see if there is data
         handle_file(fdup_file = g) # do things with the file
-    print("file upload requested") # indform the log...
+
     return redirect('.') # redirect to the top of the page (_self)
 
 # file handling functionality:
@@ -47,8 +50,13 @@ def handle_file(fdup_file):
         for chunk in fdup_file.chunks():
             dest.write(chunk)
         #dest.close()
+
+    if ".zip" in str(fdup_file):
+        print("We got a biggn")
     print("file uploaded, please add other database stuff")
 
+#_______________________________________________________________________________
+# Settings Managemnt Routines:
 
 # Apply selection of images
 def apply_changes(request):
