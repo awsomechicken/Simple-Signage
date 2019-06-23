@@ -94,3 +94,21 @@ def getContent(request):
 
     #print(content)
     return content
+
+# authentication methods
+#_______________________________________________________________________________
+def login(request):
+    print("Logging In?")
+
+    resp = HttpResponse("Hello there")
+
+    return render(request, 'login.html', {})
+
+def loginauth(request):
+    if request.method == 'POST':
+        resp = HttpResponse("Hello there")
+    else:
+        resp = HttpResponse("404: Piss off you wanker")
+
+    
+    return resp
