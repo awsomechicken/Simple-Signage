@@ -5,19 +5,18 @@
     <tr>
       <td>
         <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
-        Upload files drop: PNG, JPG, MP4, pdf, or zip file here:
+        Upload files drop: PNG, JPG, MP4, PDF, or ZIP file here:
         <form action="upload_file" enctype="multipart/form-data" method="post" target="_self">{% csrf_token %}
           <input type="file" name="fileupload" value="">
           <input type="submit" name="filesubmit" value="Upload">
         </form>
       </td>
+
       <td align="right">
         YOU: {{you}}<br>
-        {% if me %}
-        {{me}}<br>
-        {% else %}
-        Host IP Unavailable <br>
-        {% endif %}
+        <form action="{% url 'logout' %}">
+          <button type="submit" class='logout'>Logout</button><br>
+        </form>
       </td>
     </tr>
   </table>

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static './css/login.css' %}">
   </head>
   <body>
-    <p>Please Login</p>
+    <p class='info'>Please Login</p>
     <p>{{authfail}}</p>
     <form class="" action="authorize" method="post">{%csrf_token%}
       Username:<input type="text" name="usr" value=""><br>

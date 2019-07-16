@@ -59,7 +59,7 @@ ROOT_URLCONF = 'simplesignage.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,3 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# login functionality:
+LOGIN_REDIRECT_URL = 'home' # goto the beginning
+LOGOUT_REDIRECT_URL = 'home' # goto the beginning

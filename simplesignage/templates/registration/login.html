@@ -1,0 +1,19 @@
+<!-- [BaseDir]/templates/registration/login.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Authentication</title>
+    <link rel="icon" href="{% static 'icon.png' %}">
+    <link rel="stylesheet" href="{% static './css/login.css' %}">
+  </head>
+  <!--Actual Login Form, lets see how it behaves-->
+  <p class="info"><em>Simple Signage</em> Login</p>
+  <hr>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+</html>

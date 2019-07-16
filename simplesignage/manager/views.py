@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader, context
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from . import urls
 import os, time, datetime, json, random
 
@@ -9,7 +10,9 @@ import os, time, datetime, json, random
 # https://docs.djangoproject.com/en/2.2/intro/tutorial02/
 from manager.models import File, Show
 
-# Create your views here.
+#_______________________________________________________________________________
+# primary interface stuffs:
+
 #@login_required
 def index(request):
     resp = HttpResponse("Please Hold, Development in progress...")
@@ -24,6 +27,9 @@ def home(request):
     content = getContent(request)
 
     return render(request, 'index.html', content)
+
+#_______________________________________________________________________________
+# File dealings:
 
 def upload_file(request):
     if request.method == 'POST':
@@ -88,18 +94,19 @@ def getContent(request):
     }
 
     # get list of images, build web content
-    images = os.listdir('./manager/static/content')
-    for image in images: # fill images into the template
-        content['File'].append({'path':image,'use':False,'startDate':'2019-06-24','endDate':'2019-12-30','deleteOnEnd':True})
+    gottenFiles = os.listdir('./manager/static/content')
+    for file in gottenFiles: # fill images into the template
+        content['File'].append({'path':file,'image':True,'pdf':True,'video':True,'use':False,'startDate':'2019-06-24','endDate':'2019-12-30','deleteOnEnd':True})
 
     #print(content)
     return content
 
-# authentication methods
 #_______________________________________________________________________________
+# authentication methods:
+
 def login(request):
     print("Logging In?")
-
+    print(request.POST)
     resp = HttpResponse("Hello there")
 
     return render(request, 'login.html', {})
@@ -107,8 +114,8 @@ def login(request):
 def loginauth(request):
     if request.method == 'POST':
         resp = HttpResponse("Hello there")
+        print(request.POST)
     else:
         resp = HttpResponse("404: Piss off you wanker")
 
-    
     return resp

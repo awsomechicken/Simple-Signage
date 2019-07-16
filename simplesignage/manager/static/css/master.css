@@ -81,3 +81,7 @@ footer{
 footer table{
   width: 100%;
 }
+
+.logout{
+  border-radius: 5px;
+}
