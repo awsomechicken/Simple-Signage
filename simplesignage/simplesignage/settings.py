@@ -126,4 +126,4 @@ STATIC_URL = '/static/'
 
 # login functionality:
 LOGIN_REDIRECT_URL = 'home' # goto the beginning
-LOGOUT_REDIRECT_URL = 'home' # goto the beginning
+LOGOUT_REDIRECT_URL = 'login' # goto the beginning

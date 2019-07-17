@@ -1,18 +1,18 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Show, File, Page
+from .models import Show, Content#, Page
 
 #admin.site.register(Show)
 #admin.site.register(Page)
-admin.site.register(File)
+admin.site.register(Content)
 
-class Files(admin.StackedInline):
-    model = File
-    extra = 1
-
+class Content(admin.StackedInline):
+    model = Content
+    #extra = 1
 
 class ShowAdmin(admin.ModelAdmin):
-    inlines = [Files]
+    #inlines = [Content]
+    model = Show
 
 admin.site.register(Show, ShowAdmin)
