@@ -21,6 +21,8 @@ class Content(models.Model):
     expireDate = models.DateTimeField("Expire Date") # Date the file will be deleted form the system to save space
     displayTime = models.IntegerField("Display Time (Seconds)", default=15) # time to show the picture / document / etc.
     order = models.IntegerField("Special Order", default=0) # the order in which to display
+    useInShow = models.BooleanField("Use in Show", default=False)
+    deleteOnExpire = models.BooleanField("Delete on Expire", default=True)
     #show = models.ForeignKey(Show, on_delete=models.CASCADE)
 
 #class Page(models.Model):

@@ -6,13 +6,21 @@
     <title></title>
     <link rel="stylesheet" href="{% static './css/master.css' %}">
     <link rel="icon" href="{% static 'icon.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <p class="p epoch">Unix Epoch: {{os}}</p>
+    <table>
+      <tr>
+        <td><p class="p epoch">Unix Epoch: {{os}}</p></td>
+        <td><p id="updateMe"></p></td>
+      </tr>
+    </table>
+
     <div class="imagelist">
       {% include "imagelist.html" %}
     </div>
   </body>
   <!-- Footer Template containing the file upload field -->
   {% include "footer.html" %}
+
 </html>

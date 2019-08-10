@@ -13,54 +13,126 @@ p.epoch{
 
 .content{/*Form styling*/
   background: inherit;
-  padding: 2mm;
-  padding-left: 2mm;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 0.1em;
   border-bottom: solid;
   border-bottom-width: 2pt;
   border-color: #666;
+
+  font-size: 11pt;
 }
 .content img{
-  display: inline-block;
-  height: 32.35mm;
-  width: 25mm;
+  display: block;
+  height: 32mm;
+  width: 32mm;
   object-fit: cover;
   max-height: 32.35mm;
   border-radius: 1mm;
   float: left;
   padding-left: 0;
 }
+
+.content img:hover{
+  box-shadow: 1px 2px #555;
+}
+
+.preview{
+  display: none;
+  position: fixed;
+  width: 100%;
+  /*height: auto;*/
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1
+}
+
+.content img:active  ~ .preview{
+  display: inline-block;
+}
+
 .content.settings{
   display: inline-block;
   border: none;
-  color: #f00;
-  padding-left: 2mm;
+  color: #5e5;
+  padding-left: 0.2em;
 }
 .content.settings.date{
   color: #222;
   background-color: #ddd;
-  width: 100pt;
-  border-radius: 2mm;
-  height: 3mm;
+  width: 90pt;
+  /*border-radius: 2mm;*/
+  /*height: 2mm;*/
+  font-size: .8em;
 }
 .content.settings.dt{
   color: #222;
-  width: 36pt;
+  width: 32pt;
   background-color: #ddd;
-  border-radius: 2mm;
-  height: 3mm;
+  font-size: .8em;
+  padding-top: 4px;
+  padding-bottom: 3px;
 }
+
+/*custom checkbox*/
+/* https://www.w3schools.com/howto/howto_css_custom_checkbox.asp */
+/*.content.settings input[type=checkbox] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.chkbox{
+  display: inline-block;
+  top: 0px;
+  left: 0px;
+  height: 25px;
+  width: 25px;
+  background-color: #555;
+}
+
+.content.settings:hover input[type=checkbox] + .chkbox{
+  background-color: #eee;
+}
+
+.content.settings input[type=checkbox]:checked + .chkbox{
+  background-color: #f0f;
+}
+
+.content.settings input[type=checkbox]:after + .chkbox{
+  background-color: #fff;
+}
+
+/* submit button */
 .content.submit{
   background-color: #ddd;
-  border-radius: 2mm;
+  /*border-radius: 2mm;*/
   border: none;
+  position: sticky;
 }
 .content.submit:hover{
-  background-color: #bbb;
-  border-radius: 2mm;
-  border-color: #eee;
+  background-color: #eee;
   border-top: 2px;
+  box-shadow: 1px 2px #555;
+}
+
+.delete{
   border: none;
 }
+.delete input[type=text]{
+  display: none;
+}
+.delete input[type=submit]{
+  display: block;
+}
+.delete input[type=submit]:hover{
+  background-color: #a00;
+  color: #fff;
+}
+
+
 /*Hrule for */
 .horizrule{
   background-color: #123;
@@ -71,7 +143,7 @@ p.epoch{
 /*footer style*/
 footer{
   background-color: #666;
-  border-radius: 8px;
+  border-radius: 0px;
   width:100%;
   position: sticky;
   bottom: 0px;

@@ -6,11 +6,12 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('', views.home, name='home'),
-    #path('home', views.home, name='home'),
+    path('home', views.index, name='home'),
     path('apply_changes', views.apply_changes, name='apply changes'),
     path('upload_file', views.upload_file, name='upload file'),
-    #path('login',views.login, name='login'),
+    path('delete',views.delete_content, name='delete content'),
     #path('authorize', views.loginauth, name='auth'),
     # Authentication forms... don't forget the quotes dipshit...
     path('accounts/', include('django.contrib.auth.urls'))
+
 ]

@@ -6,20 +6,49 @@
     <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
     <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
     {% for file in File %}
+
       <div class="content">
-        <img src="{% static 'content' %}/{{file.path}}" alt="Image Not Found">
-        <div class="content settings">
-          Use File: <input type="checkbox" name="{{file.path}}_use" {% if file.use %}checked{% endif %}><br>
-          Start Date:<br>
-          <input type="date" class="content settings date" name="{{file.path}}_sdate" value="{{file.startDate}}"><br>
-          End Date:<br>
-          <input type="date" class="content settings date" name="{{file.path}}_edate" value="{{file.endDate}}"><br>
-        </div>
-        <div class="content settings">
-          Display Time:<br>
-          <input type="number" class="content settings dt" name="{{file.path}}_dispTime" value="{{dispTime|default:15}}"> seconds<br>
-          Delete file on<br>end date: <input type="checkbox" name="{{file.path}}_deleteOnEnd" {% if file.deleteOnEnd %}checked{% endif %}><br>
-        </div>
+        <table>
+          <tr>
+            <td>
+              <img src="{% static 'content' %}/{{file.path}}" alt="{{file.path}}">
+            </td>
+            <td>
+              <table class="content settings">
+                <tr>
+                  <td>
+                    Use File:<input type="checkbox" name="{{file.cid}}_use" {% if file.use %}checked{% endif %}><span class="chkbox"></span>
+                  </td>
+                  <td>
+                    <form class="delete" action="delete" method="post">{% csrf_token %}
+                      <input type="text" name="Delete" value="{{file.cid}}">
+                      <input type="submit" value="Delete" name="Delete_{{file.cid}}">
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Start Date:<br>
+                    <input type="date" class="content settings date" name="{{file.cid}}_sdate" value="{{file.startDate}}"><br>
+                  </td>
+                  <td>
+                    Show Time:<br>
+                    <input type="number" class="content settings dt" name="{{file.cid}}_dispTime" value="{{file.displayTime|default:15}}" min="1" max="300"><b>s</b><br>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    End Date:<br>
+                    <input type="date" class="content settings date" name="{{file.cid}}_edate" value="{{file.endDate}}"><br>
+                  </td>
+                  <td>
+                    Del on End:<br><input type="checkbox" name="{{file.cid}}_deleteOnEnd" {% if file.deleteOnEnd %}checked{% endif %}><span class="chkbox"></span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       </div>
     {% endfor %}
     <br>

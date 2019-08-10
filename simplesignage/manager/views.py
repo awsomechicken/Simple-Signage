@@ -7,6 +7,15 @@ from django.utils import timezone
 from . import urls
 import os, time, json, random
 #pdf2image # used to convert PDFs to images for the video
+from pdf2image import convert_from_path
+from PIL import Image # PIL for saving the picture
+import tempfile
+from pdf2image.exceptions import (
+    PDFInfoNotInstalledError,
+    PDFPageCountError,
+    PDFSyntaxError
+)
+
 try:
     import commands
 except:
@@ -17,12 +26,15 @@ except:
 # https://docs.djangoproject.com/en/2.2/intro/tutorial02/
 from manager.models import Content, Show
 
+# video lib:
+from . import VideoMaker as VM
+
 #_______________________________________________________________________________
 # primary interface stuffs:
 
 #@login_required
 def index(request):
-    resp = HttpResponse("Please Hold, Development in progress...")
+    resp = HttpResponse("<h1>Error 909: Development Whilst Drunk Occured</h1><h2>apologies for any inconveniece</h2><hr>")
     return resp
 
 # home / main data interface
@@ -55,49 +67,101 @@ def handle_file(fdup_file):
     print(fdup_file)
     filename = str(fdup_file).replace(' ','_')
 
-    # now build the entry:
-    item = Content(
-        imageName = "ThisWillBeFilled", # the 'c' tag needs to reflect doc type
-        uploadDate = timezone.now(),
-        startDate = timezone.now(),
-        expireDate = timezone.now() + timezone.timedelta(days=7), # today + 7 days
-        displayTime = 25, # seconds
-        order = 0
-        )
-    item.save() # save the item to get an ID,
-    dire = item.id # use the ID to make a directory
-    print("Item number:", dire) # debug
-    item.imageName = "./manager/static/content/c%i/%s"%(dire, filename) # update the file location
-    item.save() # resave
-
-
-    success = False
-    counts = 0 # loop counts
-    while (not success) and (counts < 10):
-        # make the directory in static:
-        try:
-            os.mkdir("./manager/static/content/c%i/"%(dire))
-            success = True # say something if directory was made
-        except FileExistsError:
-            print("#%i -- directory: \"./manager/static/content/%i/\" exists, Removing"%(counts,dire))
-            os.remove("./manager/static/content/c%i/"%(dire))
-            counts += 1
-
-    # build file location
-    loc = "./manager/static/content/c%s/%s"%(dire, filename)
-
-    # make file:
-    #open(loc, 'x')
-
-    # rebuild data as the user said:
-    with open(loc, 'wb+') as dest:
-        for chunk in fdup_file.chunks():
-            dest.write(chunk)
-        dest.close()
-
     if ".zip" in str(fdup_file):
         print("We got a biggn, needs to be unzipped and analized")
-    print("file uploaded, please add other database stuff")
+
+    else: # not a ZIP file, so behave in a one-off manner:
+        # now build the entry:
+        item = Content(
+            imageName = "ThisWillBeFilled", # the 'c' tag needs to reflect doc type
+            uploadDate = timezone.now(),
+            startDate = timezone.now(),
+            expireDate = timezone.now() + timezone.timedelta(days=7), # today + 7 days
+            displayTime = 25, # seconds
+            order = 0
+            )
+        item.save() # save the item to get an ID,
+        dire = item.id # use the ID to make a directory
+        print("Item number:", dire) # debug
+        item.file = "./manager/static/content/c%i/%s"%(dire, filename) # update the file location
+        item.save() # resave
+
+        # make a directory:
+        success = False
+        counts = 0 # loop counts
+        while (not success) and (counts < 10):
+            # make the directory in static:
+            try:
+                os.mkdir("./manager/static/content/c%i/"%(dire))
+                success = True # say something if directory was made
+            except FileExistsError:
+                print("#%i -- directory: \"./manager/static/content/%i/\" exists, Removing"%(counts,dire))
+                os.remove("./manager/static/content/c%i/"%(dire))
+                counts += 1
+
+        # build file location
+        loc = "./manager/static/content/c%s/%s"%(dire, filename)
+
+        # rebuild data as the user said:
+        with open(loc, 'wb+') as dest:
+            for chunk in fdup_file.chunks():
+                dest.write(chunk)
+            dest.close()
+
+
+        # find how the video will be previewed:
+        if ".mp4" in filename.lower():
+            print("I found an MP4, getting a thumbnail...")
+
+            thumbnail = get_mp4_thumbnail(file=item.file)
+            print("I gots the thumbnail: ", thumbnail)
+            item.imageName = "./manager/static/content/c%s/%s"%(dire, thumbnail)
+            item.file = loc
+            item.save()
+            print("thumbnail saved")
+
+        elif ".pdf" in filename.lower():
+            print("Found a PDF, getting a JPG")
+            try:
+                jpg_path = "./manager/static/content/c%s/%s"%(dire, filename.replace('.pdf', '.jpg'))
+            except:
+                jpg_path = "./manager/static/content/c%s/%s"%(dire, filename.replace('.PDF', '.jpg'))
+
+            image = convert_from_path(pdf_path=loc, dpi=200, thread_count=2, fmt='jpg', single_file=True)
+            print(image[0])
+            image[0].save(fp=jpg_path)
+
+            # save the stuff to database
+            item.imageName = jpg_path
+            item.file = jpg_path
+            item.save()
+
+            # now delete the PDF to save space
+            os.remove(loc)
+
+        elif ".png" or ".jpg" in filename.lower():
+            print("This must be an image...")
+            item.imageName = loc
+            item.file = loc
+            item.save()
+            print("Image saved")
+
+
+#_______________________________________________________________________________
+# Media Creation things
+
+def get_mp4_thumbnail(file="./static/content/animals-Imgur.mp4"):
+    #abspath = str(os.path.abspath(file)) #
+    rel_path = file[1:file.rindex('/')] # get the path and file split
+    file = file[file.rindex('/')+1:len(file)]
+
+    #print(abs_pth, abspath.rindex('/')-len(abspath), file)
+    thumbnail = VM.get_thumbnail(abs_path=rel_path, file_name=file)
+    return thumbnail
+
+def make_video():
+    print("Video")
+
 
 #_______________________________________________________________________________
 # Settings Managemnt Routines:
@@ -116,6 +180,9 @@ def apply_changes(request):
             file.close()
         print("Whoops")
     print("HI!")
+
+
+
     # rather than changing the page, redirect to self,
     # must return something
     return redirect('.')
@@ -133,23 +200,34 @@ def getContent(request):
     }
 
     # get list of images, build web content
-    gottenFiles = os.listdir('./manager/static/content')
-    for file in gottenFiles: # fill images into the template
-        content['File'].append({'path':file,'image':True,'pdf':True,'video':True,'use':False,'startDate':'2019-06-24','endDate':'2019-12-30','deleteOnEnd':True})
-
-    # retrieve data form the database:
-    q = Content.objects.all() # quiries
-    for item in q:
-        obj = {
-            'path':item.imageName,
-            'startDate':item.startDate,
-            'endDate':item.expireDate,
-            'use':False,
-            'deleteOnEnd':True
-        }
-        print(obj)
-        #print("Item: %i, Path:\"%s\" "%(item.id, item.imageName))
+    #gottenFiles = os.listdir('./manager/static/content')
+    files = Content.objects.all().order_by('expireDate')
+    for entry in files:
+        print(entry.id, ':', entry.imageName, entry.expireDate.date())
+        content['File'].append({
+            'cid':entry.id,
+            'path':entry.imageName.replace("./manager/static/content/", ""),
+            'use':entry.useInShow,
+            'startDate':str(entry.startDate.date()),
+            'endDate':str(entry.expireDate.date()),
+            'deleteOnEnd':entry.deleteOnExpire,
+            'displayTime':entry.displayTime
+        })
 
 
     #print(content)
     return content
+
+def upkeep():
+    print("executing upkeep...")
+
+def thePurge():
+    print("purging expired content")
+    files = Content.objects.all().order_by('expireDate')
+    for entry in files:
+        print(entry.id, ':', entry.imageName, entry.expireDate.date())
+
+def delete_content(request):
+    print(request.POST['Delete'])
+
+    return redirect('.')
