@@ -6,8 +6,7 @@
     <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
     <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
     {% for file in File %}
-
-      <div class="content">
+    <div class="content">
         <table>
           <tr>
             <td>
@@ -20,9 +19,9 @@
                     Use File:<input type="checkbox" name="{{file.cid}}_use" {% if file.use %}checked{% endif %}><span class="chkbox"></span>
                   </td>
                   <td>
-                    <form class="delete" action="delete" method="post">{% csrf_token %}
-                      <input type="text" name="Delete" value="{{file.cid}}">
-                      <input type="submit" value="Delete" name="Delete_{{file.cid}}">
+                    <form class="del" action="delete" method="post">{% csrf_token %}
+                      <input type="hidden" name="Delete" value="{{file.cid}}">
+                      <input type="submit" value="Delete" name="del-{{file.cid}}">
                     </form>
                   </td>
                 </tr>

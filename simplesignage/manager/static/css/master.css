@@ -70,7 +70,7 @@ p.epoch{
   width: 32pt;
   background-color: #ddd;
   font-size: .8em;
-  padding-top: 4px;
+  padding-top: 3px;
   padding-bottom: 3px;
 }
 
@@ -111,6 +111,7 @@ p.epoch{
   /*border-radius: 2mm;*/
   border: none;
   position: sticky;
+  padding-left: .8em;
 }
 .content.submit:hover{
   background-color: #eee;
@@ -118,16 +119,19 @@ p.epoch{
   box-shadow: 1px 2px #555;
 }
 
-.delete{
-  border: none;
+.del{
+  border-width: 0px;
 }
-.delete input[type=text]{
-  display: none;
+.del input[type=text]{
+  display: hidden;
+  border-width: 0px;
 }
-.delete input[type=submit]{
+.del input[type=submit]{
   display: block;
+  background-color: #ddd;
+  border-width: inherit;
 }
-.delete input[type=submit]:hover{
+.del input[type=submit]:hover{
   background-color: #a00;
   color: #fff;
 }

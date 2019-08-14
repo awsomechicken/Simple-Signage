@@ -32,15 +32,16 @@ def get_thumbnail(abs_path="./static/content", file_name="animals-Imgur.mp4"):
 
     return img_name # return the name of the file.
 
-def compile_video(items={}, path='./static/shows/', frame_rate=30):
+def compile_video(show_items={}, output_path='./static/shows/', frame_rate=30):
+    # items: {{path, time}, ...}
     print("Compiling Video...")
 
     name = "Show_%d"%(int(time.time()))
     print(name)
-    if path.rindex('/') == len(path)-1:
-        showPath = "%s%s.mp4"%(path, name)
+    if path.rindex('/') == len(output_path)-1:
+        showPath = "%s%s.mp4"%(output_path, name)
     else:
-        showPath = "%s/%s.mp4"%(path, name)
+        showPath = "%s/%s.mp4"%(output_path, name)
     video = VideoClip()
     video.fps=frame_rate
 

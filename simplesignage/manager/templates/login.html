@@ -11,8 +11,16 @@
     <p class='info'>Please Login</p>
     <p>{{authfail}}</p>
     <form class="" action="authorize" method="post">{%csrf_token%}
-      Username:<input type="text" name="usr" value=""><br>
-      Password: <input type="password" name="pas" value=""><br>
+      <table>
+        <tr>
+          <td>Username:</td>
+          <td><input type="text" name="usr" value=""></td>
+        </tr>
+        <tr>
+          <td>Password: </td>
+          <td><input type="password" name="pas" value=""></td>
+        </tr>
+      </table>
       <input type="submit">
     </form>
   </body>

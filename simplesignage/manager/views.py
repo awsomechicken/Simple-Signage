@@ -35,7 +35,7 @@ from . import VideoMaker as VM
 #@login_required
 def index(request):
     resp = HttpResponse("<h1>Error 909: Development Whilst Drunk Occured</h1><h2>apologies for any inconveniece</h2><hr>")
-    return resp
+    return resp, redirect('/')
 
 # home / main data interface
 @login_required
@@ -218,16 +218,46 @@ def getContent(request):
     #print(content)
     return content
 
+#_______________________________________________________________________________
+# content upkeep routines, used to remove old files, and refresh the slideshow
 def upkeep():
     print("executing upkeep...")
 
 def thePurge():
     print("purging expired content")
+
+    #Entry.objects.filter(pub_date__lte='2006-01-01')
     files = Content.objects.all().order_by('expireDate')
+
     for entry in files:
         print(entry.id, ':', entry.imageName, entry.expireDate.date())
 
+@login_required
 def delete_content(request):
-    print(request.POST['Delete'])
+    deletion = int(request.POST['Delete'])
+    # get the content we want to delete
+    remove = Content.objects.get(id__exact=deletion)
+    print("Delete:",remove.imageName)
 
+    delete_worker(remove)
+
+    # redirect to the same page
     return redirect('.')
+
+# actual reusable worker
+def delete_worker(dbEntry):
+    # use OS remove_dir to delete the whole directory
+    directory = dbEntry.imageName[0:dbEntry.imageName.rindex('/')+1]
+    print(directory)
+    # first delete the contents:
+    try: # try both, because in some instances file and imageName are the same
+        os.remove(dbEntry.imageName)
+        os.remove(dbEntry.file)
+    except:
+        print('all done')
+
+    # then delete the directory:
+    os.rmdir(directory)
+
+    # remove the database entry
+    dbEntry.delete()

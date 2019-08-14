@@ -7,8 +7,8 @@ import random, time, datetime
 # shows and presentation models
 class Show(models.Model):
     # slide show model, shows the file with these details
-    #name = models.CharField('Show Name', default="Slide Show Name", max_length=150)
-    id = models.IntegerField('Show ID', primary_key=True)
+    name = models.CharField('Show Name', default="Slide Show Name", max_length=150)
+    #id = models.IntegerField('Show ID', primary_key=True)
 
 # content models:
 class Content(models.Model):
