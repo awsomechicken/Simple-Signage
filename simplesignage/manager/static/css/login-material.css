@@ -1,0 +1,40 @@
+body{
+  background-color: #333;
+}
+
+.info{
+  text-align: center;
+  font-size: 24pt;
+  font-weight: bold;
+  color: #f81;
+}
+
+form {
+  text-align: center
+}
+
+form label{
+  text-align: right;
+  color: #f00;
+  font-style: oblique;
+}
+
+form input{
+  border-radius: 4px;
+  border-width: 0;
+  padding-left: 4px;
+  width: 45mm;
+  height: 7mm;
+  color: #f81;
+}
+
+form input[type=username]{
+  padding-right: 3pt;
+}
+
+form button{
+  border-radius: 4px;
+  border-width: 0;
+  width: 25mm;
+  height: 7mm;
+}

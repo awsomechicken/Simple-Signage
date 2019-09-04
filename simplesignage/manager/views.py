@@ -24,7 +24,7 @@ except:
 
 # Database implementation:
 # https://docs.djangoproject.com/en/2.2/intro/tutorial02/
-from manager.models import Content, Show
+from manager.models import Content, Show, Screen
 
 # video lib:
 from . import VideoMaker as VM
@@ -40,7 +40,7 @@ def index(request):
 # home / main data interface
 @login_required
 def home(request):
-    print("Home", str(request.META['REMOTE_ADDR']))
+    #print("Home", str(request.META['REMOTE_ADDR']))
     # content is passed into render, and can be parsed by the template
 
     content = getContent(request)
@@ -77,7 +77,7 @@ def handle_file(fdup_file):
             uploadDate = timezone.now(),
             startDate = timezone.now(),
             expireDate = timezone.now() + timezone.timedelta(days=7), # today + 7 days
-            displayTime = 25, # seconds
+            displayTime = 5, # seconds
             order = 0
             )
         item.save() # save the item to get an ID,
@@ -110,7 +110,7 @@ def handle_file(fdup_file):
 
 
         # find how the video will be previewed:
-        if ".mp4" in filename.lower():
+        if (".mp4" or ".mpg") in filename.lower():
             print("I found an MP4, getting a thumbnail...")
 
             thumbnail = get_mp4_thumbnail(file=item.file)
@@ -146,7 +146,61 @@ def handle_file(fdup_file):
             item.save()
             print("Image saved")
 
+#_______________________________________________________________________________
+# Screen settings
 
+@login_required
+def screens(request):
+    print("SCREENS!")
+
+    content = {
+        'screens': [],
+        'msg':'HI!'
+    }
+
+    # get the screens:
+    s = Screen.objects.all().order_by('id')
+
+    for item in s:
+        content['screens'].append({
+            'id' : item.id,
+            'name' : item.tvName,
+            'addr' : item.hostIP,
+            'width': item.width,
+            'height': item.height
+        })
+
+    return render(request, 'screens.html', content)
+
+def screenSettings(request):
+    print("screen settings")
+
+@login_required
+def newScreen(request):
+    # save a new screen
+    screen = request.POST
+    name = screen.getlist('name')[0]
+    addr = screen.getlist('addr')[0]
+    width = screen.getlist('width')[0]
+    height = screen.getlist('height')[0]
+
+    print("Recieved:", name, addr, width, height)
+
+    new = Screen(tvName = name, hostIP = addr, width=width, height=height)
+    new.save()
+
+    return redirect('/screens')
+
+@login_required
+def deleteScreen(request):
+    # Delete a screen db entry
+    screenid = request.POST.getlist("Delete")[0]
+
+    rem = Screen.objects.get(id__exact=screenid)
+    rem.delete()
+    print("delete:", screenid)
+
+    return redirect("/screens")
 #_______________________________________________________________________________
 # Media Creation things
 
@@ -159,17 +213,82 @@ def get_mp4_thumbnail(file="./static/content/animals-Imgur.mp4"):
     thumbnail = VM.get_thumbnail(abs_path=rel_path, file_name=file)
     return thumbnail
 
-def make_video():
-    print("Video")
+@login_required
+def make_video(request):
+    print("Compile Video")
+    # get your content hat is selected:
+    slides = Content.objects.filter(useInShow=True)
+    #print(slides)
 
+    # add a show entry:
+    #show_item = Show(
+    #    name="glarth",
+    #    file=videoFilePath
+    #)
 
+    # compile_video(show_items={}, output_path='./static/shows/', frame_rate=30)
+    videoFilePath = VM.compile_video(show_items=slides)
+
+    return redirect('.')
+
+def status(request):
+    print(request.method)
 #_______________________________________________________________________________
 # Settings Managemnt Routines:
-@login_required
-# Apply selection of images
+@login_required # Apply selection of images
 def apply_changes(request):
     changes = request.POST
-    print(changes)
+    log_applied_changes(changes)
+
+    cid = changes.getlist('cid')
+    sdate = changes.getlist('sdate')
+    edate = changes.getlist('edate')
+    dispTime = changes.getlist('dispTime')
+    use = changes.getlist('use')
+    delOnEnd = changes.getlist('deleteOnEnd')
+
+    #print(cid)
+    for i in range(0, len(cid)): # adjust dates and dt
+        item = Content.objects.get(id=cid[i])
+        item.startDate = sdate[i]
+        item.endDate = edate[i]
+        item.displayTime = dispTime[i]
+        item.save() # save the entries
+
+    # determine if in delOnEnd:
+    if len(delOnEnd) > 0:
+        for e in cid:
+            item = Content.objects.get(id=e)
+            if e in delOnEnd:
+                item.deleteOnExpire = True
+            else:
+                item.deleteOnExpire = False
+            item.save() # save the entry
+
+    # determine if in use:
+    if len(use) > 0:
+        for e in cid:
+            item = Content.objects.get(id=e)
+            if e in use: # if the element is in Use:
+                item.useInShow = True # show
+            else:
+                item.useInShow = False # don't show
+            item.save() # save the entry
+
+    try: # try to delete things,
+        if len(request.POST.getlist('Delete')) > 0:
+            print("Deleting Things")
+            delete_content(request)
+    except Exception as e: # otherwise don't delete things
+        print("Not deleting things")
+        print(e)
+
+    # rather than changing the page, redirect to self,
+    # must return something
+    return redirect('.')
+
+def log_applied_changes(changes):
+    # log the post to a file for later analysis
     try:
         with open('./manager/static/post.json','a') as file:
             file.write(str(changes))
@@ -179,13 +298,6 @@ def apply_changes(request):
             file.write(str(changes))
             file.close()
         print("Whoops")
-    print("HI!")
-
-
-
-    # rather than changing the page, redirect to self,
-    # must return something
-    return redirect('.')
 
 @login_required
 def getContent(request):
@@ -203,17 +315,17 @@ def getContent(request):
     #gottenFiles = os.listdir('./manager/static/content')
     files = Content.objects.all().order_by('expireDate')
     for entry in files:
-        print(entry.id, ':', entry.imageName, entry.expireDate.date())
+        #print(entry.id, ':', entry.imageName, entry.expireDate.date())
         content['File'].append({
             'cid':entry.id,
             'path':entry.imageName.replace("./manager/static/content/", ""),
+            'filePath':entry.file.replace("./manager/static/content/", ""),
             'use':entry.useInShow,
             'startDate':str(entry.startDate.date()),
             'endDate':str(entry.expireDate.date()),
             'deleteOnEnd':entry.deleteOnExpire,
             'displayTime':entry.displayTime
         })
-
 
     #print(content)
     return content
@@ -232,14 +344,14 @@ def thePurge():
     for entry in files:
         print(entry.id, ':', entry.imageName, entry.expireDate.date())
 
-@login_required
 def delete_content(request):
-    deletion = int(request.POST['Delete'])
+    deletion = request.POST.getlist('Delete')
     # get the content we want to delete
-    remove = Content.objects.get(id__exact=deletion)
-    print("Delete:",remove.imageName)
+    for dele in deletion:
+        remove = Content.objects.get(id__exact=dele)
+        print("Delete:",remove.imageName)
 
-    delete_worker(remove)
+        delete_worker(remove)
 
     # redirect to the same page
     return redirect('.')
@@ -250,11 +362,16 @@ def delete_worker(dbEntry):
     directory = dbEntry.imageName[0:dbEntry.imageName.rindex('/')+1]
     print(directory)
     # first delete the contents:
-    try: # try both, because in some instances file and imageName are the same
+    try: # try delete image file
         os.remove(dbEntry.imageName)
+    except Exception as e:
+        print('\n\n%s\n\n'%e)
+
+    try: # try delete file file
+        print("\ndelete:%s"%dbEntry.file)
         os.remove(dbEntry.file)
-    except:
-        print('all done')
+    except Exception as e:
+        print('\n%s\n\n'%e)
 
     # then delete the directory:
     os.rmdir(directory)

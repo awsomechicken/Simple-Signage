@@ -6,14 +6,46 @@
     <meta charset="utf-8">
     <title>Authentication</title>
     <link rel="icon" href="{% static 'icon.png' %}">
-    <link rel="stylesheet" href="{% static './css/login.css' %}">
+    <!--link rel="stylesheet" href="{% static './css/login.css' %}"-->
+    <link href="//cdn.muicss.com/mui-0.9.43/css/mui.min.css" rel="stylesheet" type="text/css"/>
   </head>
   <!--Actual Login Form, lets see how it behaves-->
-  <p class="info"><em>Simple Signage</em> Login</p>
-  <hr>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+  <!--div class="mui-appbar">
+    <table>
+      <tr>
+        <td align="center">
+          <em>Simple Signage</em> Login
+        </td>
+      </tr>
+    </table>
+  </div-->
+  <table width="100%">
+    <tr>
+      <td align="center">
+        <br>
+        <div class="mui-panel" style="width:50%" align="center">
+          <div class="mui-appbar">
+            Simple-Signage Login, Please Login
+          </div>
+          <div>
+            <form method="post" class="mui-form">
+              {% csrf_token %}
+              <!--{{ form.as_p }}--><!--Used this to get the form shape-->
+              <div class="mui-textfield">
+                <!--label for="id_username">Username:</label-->
+                <input type="text" name="username" placeholder="Username" autofocus="" required="" id="id_username">
+              </div>
+              <div class="mui-textfield">
+                <!--label for="id_password">Password:</label-->
+                <input type="password" name="password" placeholder="Password" required="" id="id_password">
+              </div>
+              <button type="submit" class="mui-btn mui-btn--primary">Login</button>
+            </form>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+
 </html>

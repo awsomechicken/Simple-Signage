@@ -1,11 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Show, Content#, Page
+from .models import Show, Content, Screen
 
 #admin.site.register(Show)
 #admin.site.register(Page)
 admin.site.register(Content)
+admin.site.register(Screen)
 
 class Content(admin.StackedInline):
     model = Content

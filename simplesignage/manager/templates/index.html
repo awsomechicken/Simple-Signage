@@ -1,18 +1,39 @@
 {%load static%}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
   <head>
     <meta charset="utf-8">
     <title></title>
-    <link rel="stylesheet" href="{% static './css/master.css' %}">
+    <link rel="stylesheet" href="{% static './css/master-material.css' %}">
     <link rel="icon" href="{% static 'icon.png' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static './js/timeload.js' %}" charset="utf-8"></script>
+    <!-- Material UI: https://www.muicss.com/ -->
+    <link href="//cdn.muicss.com/mui-0.9.43/css/mui.min.css" rel="stylesheet" type="text/css"/>
+    <!--script src="//cdn.muicss.com/mui-0.9.43/js/mui.min.js"></script-->
+    <!-- Boilerplate HTML: https://www.muicss.com/docs/v1/webcomponents/boilerplate-html -->
+    <script src="//cdn.muicss.com/mui-0.9.43/webcomponents/mui-webcomponents.js"></script>
   </head>
+
   <body>
+    <div class="mui-appbar">
+      <table width="100%">
+        <tr style="vertical-align:middle">
+          <td>
+            <a href="#"><button type="button" name="button" class="mui-btn mui-btn--primary" disabled>Content</button></a>
+            <a href="/screens" class="mui-btn mui-btn--primary" >Screens</a>
+          </td>
+          <td align="right">
+            <a href="/admin" class="mui-btn mui-btn--primary">Admin</a>
+            <a href="{% url 'logout' %}" class="mui-btn mui-btn--primary">Logout</a>
+          </td>
+        </tr>
+      </table>
+    </div>
     <table>
       <tr>
-        <td><p class="p epoch">Unix Epoch: {{os}}</p></td>
-        <td><p id="updateMe"></p></td>
+        <td><p id="updateMe" class="p epoch"></p></td>
       </tr>
     </table>
 

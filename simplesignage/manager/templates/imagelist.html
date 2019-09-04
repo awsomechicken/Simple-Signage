@@ -6,51 +6,82 @@
     <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
     <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
     {% for file in File %}
+    <div class="mui-divider"></div>
     <div class="content">
-        <table>
-          <tr>
-            <td>
-              <img src="{% static 'content' %}/{{file.path}}" alt="{{file.path}}">
-            </td>
-            <td>
-              <table class="content settings">
-                <tr>
-                  <td>
-                    Use File:<input type="checkbox" name="{{file.cid}}_use" {% if file.use %}checked{% endif %}><span class="chkbox"></span>
-                  </td>
-                  <td>
-                    <form class="del" action="delete" method="post">{% csrf_token %}
-                      <input type="hidden" name="Delete" value="{{file.cid}}">
-                      <input type="submit" value="Delete" name="del-{{file.cid}}">
-                    </form>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    Start Date:<br>
-                    <input type="date" class="content settings date" name="{{file.cid}}_sdate" value="{{file.startDate}}"><br>
-                  </td>
-                  <td>
-                    Show Time:<br>
-                    <input type="number" class="content settings dt" name="{{file.cid}}_dispTime" value="{{file.displayTime|default:15}}" min="1" max="300"><b>s</b><br>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    End Date:<br>
-                    <input type="date" class="content settings date" name="{{file.cid}}_edate" value="{{file.endDate}}"><br>
-                  </td>
-                  <td>
-                    Del on End:<br><input type="checkbox" name="{{file.cid}}_deleteOnEnd" {% if file.deleteOnEnd %}checked{% endif %}><span class="chkbox"></span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <table>
+        <tr>
+          <td>
+            <a href="{% static 'content' %}/{{file.filePath}}" target="_blank"><img src="{% static 'content' %}/{{file.path}}" alt="{{file.path}}"></a>
+            <input type="hidden" name="cid" value="{{file.cid}}">
+          </td>
+          <td>
+            <table class="content settings">
+              <tr>
+                <td>
+                  <!--https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-type-->
+                  <div class="onoffswitch">
+                    <input class="onoffswitch-checkbox" type="checkbox" id="use{{file.cid}}" {% if file.use %}checked{% endif %} value="{{file.cid}}" name="use">
+                    <label class="onoffswitch-label" for="use{{file.cid}}"></label>
+                  </div>
+                </td>
+                <td>
+                    Delete: <input type="checkbox" name="Delete" value="{{file.cid}}">
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Start Date:<br><!--class="content settings date"-->
+                  <input type="date"  name="sdate" value="{{file.startDate}}"><br>
+                </td>
+                <td>
+                  Show Time:<br><!--class="content settings dt"-->
+                  <input type="number"  name="dispTime" value="{{file.displayTime|default:15}}" min="1" max="300"><b>s</b><br>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  End Date:<br><!--class="content settings date"-->
+                  <input type="date"  name="edate" value="{{file.endDate}}"><br>
+                </td>
+                <td>
+                  Del on end:<br>
+                  <div class="onoffswitch">
+                    <input class="onoffswitch-checkbox" type="checkbox" id="doe{{file.cid}}" {% if file.deleteOnEnd %}checked{% endif %} value="{{file.cid}}" name="deleteOnEnd">
+                    <label class="onoffswitch-label" for="doe{{file.cid}}"></label>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
     {% endfor %}
     <br>
-    <input type="submit" class="content submit" value="Apply Changes" class="form submit">
+     <!--class="content submit"-->
+     <div class="mui-divider"></div>
+     <table>
+       <tr>
+         <td>
+           <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" value="Apply Changes">
+         </td>
+         <td>
+          Save your changes to your database
+         </td>
+       </tr>
+     </table>
+  </form>
+  <!--br-->
+  <form action="makevideo" method="post">{% csrf_token %}
+    <table>
+      <tr>
+        <td>
+          <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" name="go" value="Compile Video ">
+        </td>
+        <td>
+          Concatenate you photos and videos into a single video and send it to your screens (this will take a while)
+        </td>
+      </tr>
+    </table>
   </form>
 {% endblock imageList %}

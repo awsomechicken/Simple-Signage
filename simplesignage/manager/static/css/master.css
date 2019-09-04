@@ -37,16 +37,6 @@ p.epoch{
   box-shadow: 1px 2px #555;
 }
 
-.preview{
-  display: none;
-  position: fixed;
-  width: 100%;
-  /*height: auto;*/
-  margin-left: auto;
-  margin-right: auto;
-  z-index: 1
-}
-
 .content img:active  ~ .preview{
   display: inline-block;
 }
@@ -61,8 +51,6 @@ p.epoch{
   color: #222;
   background-color: #ddd;
   width: 90pt;
-  /*border-radius: 2mm;*/
-  /*height: 2mm;*/
   font-size: .8em;
 }
 .content.settings.dt{
@@ -108,7 +96,6 @@ p.epoch{
 /* submit button */
 .content.submit{
   background-color: #ddd;
-  /*border-radius: 2mm;*/
   border: none;
   position: sticky;
   padding-left: .8em;
@@ -158,6 +145,6 @@ footer table{
   width: 100%;
 }
 
-.logout{
+/*.logout{
   border-radius: 5px;
-}
+}*/
