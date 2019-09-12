@@ -1,0 +1,115 @@
+{%load static%}
+{% block imageList %}
+  <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
+  <!-- use static "content" prefix to the file -->
+  <table>
+    <tr>
+      <td>
+        <div class="items">
+          <!-- action="apply_changes" method="post" target="#"  -->
+          <form id="contentChangeForm">
+            {% csrf_token %}
+          <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
+          <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
+            {% for file in File %}
+            <div class="items stuff">
+            <!--div class="mui-divider"></div-->
+            <div class="mui-panel">
+              <table>
+                <tr>
+                  <td>
+                    <!-- always shown image and switch -->
+                    <table>
+                      <tbody align="center">
+                        <tr align="center">
+                          <td>
+                            <!-- Thumbnail Image -->
+                            <img class="content thumbnail" src="{% static 'content' %}/{{file.path}}" alt="{{file.path}}" onclick="picture_preview('{% static 'content' %}/{{file.filePath}}')">
+                            <input type="hidden" name="cid" value="{{file.cid}}">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table>
+                              <tr>
+                                <td>
+                                  <!-- use in show switch-->
+                                  <div class="onoffswitch">
+                                    <input class="onoffswitch-checkbox" type="checkbox" id="use{{file.cid}}" {% if file.use %}checked{% endif %} value="{{file.cid}}" name="use" onchange="submitContentChanges()">
+                                    <label class="onoffswitch-label" for="use{{file.cid}}"></label>
+                                  </div>
+                                </td>
+                                <td><p>  </p></td>
+                                <td>
+                                  <!-- Ellipsies: show more... -->
+                                  <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="button" onclick="tsv('content{{file.cid}}_settings')">...</button>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td> <!-- end of always shown -->
+                  <td id="content{{file.cid}}_settings" style="display:none">
+                    <!-- all other content settings -->
+                    <!--Delete: <input type="checkbox" name="Delete" value="{{file.cid}}">-->
+                    <table>
+                      <tr>
+                        <td>
+                          Show Time:<br><!--class="content settings dt"-->
+                          <input type="number"  name="dispTime" value="{{file.displayTime|default:15}}" min="1" max="300" onchange="submitContentChanges()"><b>s</b>
+                        </td>
+                        <td>
+                          Del on end:<br>
+                          <div class="onoffswitch">
+                            <input class="onoffswitch-checkbox" type="checkbox" id="doe{{file.cid}}" {% if file.deleteOnEnd %}checked{% endif %} value="{{file.cid}}" name="deleteOnEnd" onchange="submitContentChanges()">
+                            <label class="onoffswitch-label" for="doe{{file.cid}}"></label>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          Start Date:<br><!--class="content settings date"-->
+                          <input type="date"  name="sdate" value="{{file.startDate}}" onchange="submitContentChanges()">
+                        </td>
+                        <td>
+                          End Date:<br><!--class="content settings date"-->
+                          <input type="date"  name="edate" value="{{file.endDate}}" onchange="submitContentChanges()">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td>
+                          <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" type="button" name="button" onclick="deleteContent({{file.cid}}, '{{csrf_token}}')"> Delete </button>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </div><!-- div of mui-panel -->
+          </div>
+          {% endfor %}
+          </form>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="items apply">
+          <div class="mui-divider"></div>
+          <!--<button class="mui-btn mui-btn--small mui-btn--primary" onclick="submitContentChanges()">Apply Changes</button>
+            Save your changes to your database-->
+
+          <form action="makevideo" method="post">{% csrf_token %}
+            <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" name="go" value="Compile Video ">
+            Concatenate your photos and videos into a single video and send it to your screens (this will take a while)
+          </form>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <br>
+{% endblock imageList %}

@@ -4,6 +4,7 @@ from django.template import loader, context
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
+from threading import Thread
 from . import urls
 import os, time, json, random
 #pdf2image # used to convert PDFs to images for the video
@@ -15,12 +16,18 @@ from pdf2image.exceptions import (
     PDFPageCountError,
     PDFSyntaxError
 )
+# ToDo: form with delete button externally, to accomplish the same thing as delete-apply
 
 try:
-    import commands
+    import subprocess
 except:
-    print("please install module \'commands\'\n\t~$ pip(3) install commands\n")
-#
+    print("\'Subprocess\'~$ package isn't installed [ https://pymotw.com/2/subprocess/ ].\n\t please install: pip(3) install subprocess\n")
+
+try:
+    import schedule
+except Exception as e:
+    print("\'Scheduler\' package isn't installed [ https://github.com/dbader/schedule ].\n\t please install: ~$ pip(3) install scheduler")
+
 
 # Database implementation:
 # https://docs.djangoproject.com/en/2.2/intro/tutorial02/
@@ -219,12 +226,7 @@ def make_video(request):
     # get your content hat is selected:
     slides = Content.objects.filter(useInShow=True)
     #print(slides)
-
     # add a show entry:
-    #show_item = Show(
-    #    name="glarth",
-    #    file=videoFilePath
-    #)
 
     # compile_video(show_items={}, output_path='./static/shows/', frame_rate=30)
     videoFilePath = VM.compile_video(show_items=slides)
@@ -334,18 +336,19 @@ def getContent(request):
 # content upkeep routines, used to remove old files, and refresh the slideshow
 def upkeep():
     print("executing upkeep...")
-
-def thePurge():
-    print("purging expired content")
-
     #Entry.objects.filter(pub_date__lte='2006-01-01')
-    files = Content.objects.all().order_by('expireDate')
+    files = Content.objects.all().order_by("expireDate")
 
-    for entry in files:
-        print(entry.id, ':', entry.imageName, entry.expireDate.date())
+    if len(files) > 0:
+        print("purging expired content")
+        for entry in files:
+            print(entry.id, ':', entry.imageName, entry.expireDate.date(), timezone.now().date())
+            #delete_worker(entry)
+
 
 def delete_content(request):
     deletion = request.POST.getlist('Delete')
+    log_applied_changes(deletion)
     # get the content we want to delete
     for dele in deletion:
         remove = Content.objects.get(id__exact=dele)
@@ -358,6 +361,7 @@ def delete_content(request):
 
 # actual reusable worker
 def delete_worker(dbEntry):
+    # Pass DJango DB object into, and things go away
     # use OS remove_dir to delete the whole directory
     directory = dbEntry.imageName[0:dbEntry.imageName.rindex('/')+1]
     print(directory)
@@ -378,3 +382,25 @@ def delete_worker(dbEntry):
 
     # remove the database entry
     dbEntry.delete()
+
+
+#_______________________________________________________________________________
+# Initalize Scheduling with the Schedule module:
+
+def schedule_check():
+    #schedule.every(1).day.at("01:15").do(upkeep)
+    schedule.every(1).minute.do(upkeep).run() # remove run in production
+
+    while(True):
+        with open("./threadcheck.txt", "w+") as f:
+            f.write(str(time.time()))
+            f.close()
+        schedule.run_pending() # quirie the schedule
+        time.sleep(1) # wait a bit, keep CPU load low
+
+def schedule_thread():
+    print("running schedule thread")
+    thr = Thread(target=schedule_check, daemon=True)
+    thr.start()
+
+schedule_thread()

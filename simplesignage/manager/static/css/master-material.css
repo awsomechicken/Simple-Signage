@@ -3,7 +3,7 @@
 .content{/*Form styling*/
   background: inherit;
 }
-.content img{
+.content.thumbnail{
   display: block;
   height: 32mm;
   width: 32mm;
@@ -14,25 +14,44 @@
   padding-left: 0;
 }
 
-.content img:hover{
+.content.thumbnail:hover{
   box-shadow: 1px 2px #555;
 }
 
-.content img:active  ~ .preview{
-  display: inline-block;
+
+/*container for content*/
+.items{
+  display: block;
+  align-items: center;
+  top: 2em;
+}
+
+/*each content item*/
+.items.stuff{
+  display: inline;
+  float: left;
+  padding-left: .75em;
+  padding-right: .75em
+}
+
+/*container for the buttons*/
+.items.apply{
+  display: block;
+  width: 100%;
+  bottom: 0px;
 }
 
 /*footer style*/
-footer{
+.footing{
+  display: block;
   background-color: #fff;
   border-radius: 0px;
   width:100%;
-  position: sticky;
-  bottom: 0px;
-  top: 1mm;
+  position: fixed;
+  bottom:0px;
 }
 
-footer table{
+.footing table{
   width: 100%;
 }
 
