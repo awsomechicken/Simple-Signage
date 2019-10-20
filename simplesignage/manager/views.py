@@ -4,9 +4,11 @@ from django.template import loader, context
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
+from django.views.static import serve
 from threading import Thread
 from . import urls
-import os, time, json, random
+import os, time, datetime, json, random, string
 #pdf2image # used to convert PDFs to images for the video
 from pdf2image import convert_from_path
 from PIL import Image # PIL for saving the picture
@@ -37,8 +39,12 @@ from manager.models import Content, Show, Screen
 from . import VideoMaker as VM
 
 #_______________________________________________________________________________
-# primary interface stuffs:
+# global variables for things:
 
+Video_Compiling = False
+
+#_______________________________________________________________________________
+# primary interface stuffs:
 #@login_required
 def index(request):
     resp = HttpResponse("<h1>Error 909: Development Whilst Drunk Occured</h1><h2>apologies for any inconveniece</h2><hr>")
@@ -54,16 +60,23 @@ def home(request):
 
     return render(request, 'index.html', content)
 
+# documentation senction, over by the admin page link
+def documentation(request):
+    resp = HttpResponse("documentation here...")
+
+    return render(request, 'documentation.html')
 #_______________________________________________________________________________
 # File dealings:
 @login_required
 def upload_file(request):
     if request.method == 'POST':
-        print("file upload requested") # indform the log...
-        g = request.FILES['fileupload'] # get the file the user sent
-        print("Length of files: ", len(g)) # see if there is data
-        handle_file(fdup_file = g) # do things with the file
-
+        try: # to mitigate the no file found error
+            print("file upload requested") # indform the log...
+            g = request.FILES['fileupload'] # get the file the user sent
+            print("Length of files: ", len(g)) # see if there is data
+            handle_file(fdup_file = g) # do things with the file
+        except: # don't do a damn thing
+            print("No file selected, not trying to handle it.")
     return redirect('.') # redirect to the top of the page (_self)
 
 # file handling functionality:
@@ -117,7 +130,7 @@ def handle_file(fdup_file):
 
 
         # find how the video will be previewed:
-        if (".mp4" or ".mpg") in filename.lower():
+        if (".mp4") in filename.lower():
             print("I found an MP4, getting a thumbnail...")
 
             thumbnail = get_mp4_thumbnail(file=item.file)
@@ -146,7 +159,7 @@ def handle_file(fdup_file):
             # now delete the PDF to save space
             os.remove(loc)
 
-        elif ".png" or ".jpg" in filename.lower():
+        elif ".png" or ".jpg" or ".gif" in filename.lower():
             print("This must be an image...")
             item.imageName = loc
             item.file = loc
@@ -155,6 +168,29 @@ def handle_file(fdup_file):
 
 #_______________________________________________________________________________
 # Screen settings
+
+# TV token authentication decoration:
+def token_authorization(func):
+    def function_wrapper(req): # wrapper for the request stuffs (I think)
+        try:
+            key = req.GET.getlist('auth_token')[0] # get the key
+        except:
+            key = "None Found"
+        print("auth_token =", key)
+
+        appscreen = Screen.objects.filter(key=key) # filtered screen list
+        key_check = ''
+        for s in appscreen:
+            key_check = s.key
+            print("Key check:", key_check)
+
+        if key_check == key:
+            return func(req)
+        else:
+            raise PermissionDenied
+
+    return function_wrapper
+
 
 @login_required
 def screens(request):
@@ -174,13 +210,18 @@ def screens(request):
             'name' : item.tvName,
             'addr' : item.hostIP,
             'width': item.width,
-            'height': item.height
+            'height': item.height,
+            'key' : item.key
         })
 
     return render(request, 'screens.html', content)
 
 def screenSettings(request):
+    # used to update screen settings
     print("screen settings")
+
+def screen_active_hours(request):
+    print("active hours")
 
 @login_required
 def newScreen(request):
@@ -191,9 +232,9 @@ def newScreen(request):
     width = screen.getlist('width')[0]
     height = screen.getlist('height')[0]
 
-    print("Recieved:", name, addr, width, height)
+    #print("Recieved:", name, addr, width, height)
 
-    new = Screen(tvName = name, hostIP = addr, width=width, height=height)
+    new = Screen(tvName = name, hostIP = addr, width=width, height=height, key=make_tv_key())
     new.save()
 
     return redirect('/screens')
@@ -208,6 +249,34 @@ def deleteScreen(request):
     print("delete:", screenid)
 
     return redirect("/screens")
+
+def make_tv_key():
+    len = 48 # length of the key
+    ky = ''.join(random.choices(string.ascii_letters + string.digits, k=len))
+
+    return ky
+
+# public facing content delivery methods, using token auth.
+@token_authorization
+def get_tv_video(request):
+    # counterpart for the get_video method in simpleviewer
+
+    print("transmitting video file")
+    fileToTXDir = os.path.dirname(Show.objects.all()[0].file)
+    fileToTXName = os.path.basename(Show.objects.all()[0].file)
+    # from: https://stackoverflow.com/questions/1156246/having-django-serve-downloadable-files
+    file_to_Serve = serve(request, fileToTXName, fileToTXDir)
+
+
+    return file_to_Serve
+
+@token_authorization
+def check_new_video(request):
+    # check if there is a new video for the screens
+    print(request.POST.getlist('auth_token'))
+    curr_show = Show.objects.all()[0].name # get the current show name, Screens will compare theirs to it.
+    return HttpResponse(curr_show) # send a response containing the name of the show
+
 #_______________________________________________________________________________
 # Media Creation things
 
@@ -222,6 +291,13 @@ def get_mp4_thumbnail(file="./static/content/animals-Imgur.mp4"):
 
 @login_required
 def make_video(request):
+
+    videoFilePath = make_video_worker()
+
+    return HttpResponse("<h2>Show accelerated video: %s</h2> <p><a href=\"/\">Go Back</a><p>"%videoFilePath) #redirect('.')
+
+def make_video_worker():
+    # reusable worker!
     print("Compile Video")
     # get your content hat is selected:
     slides = Content.objects.filter(useInShow=True)
@@ -229,23 +305,48 @@ def make_video(request):
     # add a show entry:
 
     # compile_video(show_items={}, output_path='./static/shows/', frame_rate=30)
-    videoFilePath = VM.compile_video(show_items=slides)
+    global Video_Compiling
+    Video_Compiling = True # indicate the video is compiling
 
-    return redirect('.')
+    print("video compiling:", Video_Compiling)
+    videoFilePath, new_show_name = VM.compile_video(show_items=slides)
+    new_show = Show(name = new_show_name, file = videoFilePath)
+    new_show.save()
 
-def status(request):
+    Video_Compiling = False # indicate the video is done
+
+    print("video compiling:", Video_Compiling)
+
+    # purge old shows:
+    shows = Show.objects.all()
+
+    for item in shows: # for every old show:
+        if item.name != new_show_name: # if it isn't the newest
+            os.remove(item.file) # delete the video file
+            item.delete() # get rid of the DB entry
+
+    return videoFilePath # return a thing for use by routines...
+
+def video_compile_status(request):
+    # routine for showing the status of the video comnpile for the UI,
+    # so the user doens't get frustrated
     print(request.method)
+    status = HttpResponse("%s"%(Video_Compiling))
+
+    return status
+
 #_______________________________________________________________________________
 # Settings Managemnt Routines:
 @login_required # Apply selection of images
 def apply_changes(request):
     changes = request.POST
     log_applied_changes(changes)
-
     cid = changes.getlist('cid')
     sdate = changes.getlist('sdate')
     edate = changes.getlist('edate')
     dispTime = changes.getlist('dispTime')
+    gifIteration = changes.getlist('gifIteration')
+    print("GIFs:", gifIteration)
     use = changes.getlist('use')
     delOnEnd = changes.getlist('deleteOnEnd')
 
@@ -253,8 +354,24 @@ def apply_changes(request):
     for i in range(0, len(cid)): # adjust dates and dt
         item = Content.objects.get(id=cid[i])
         item.startDate = sdate[i]
-        item.endDate = edate[i]
-        item.displayTime = dispTime[i]
+        item.expireDate = edate[i]
+        try:
+            dt = dispTime[i]
+            if dt < 301:
+                item.displayTime = dt
+            else:
+                item.displayTime = 300
+        except:
+            pass
+        try:
+            gi = int(gifIteration[i])
+            if gi < 301:
+                item.gifIteration = gi
+            else:
+                item.gifIteration = 300
+        except:
+            pass
+
         item.save() # save the entries
 
     # determine if in delOnEnd:
@@ -325,6 +442,7 @@ def getContent(request):
             'use':entry.useInShow,
             'startDate':str(entry.startDate.date()),
             'endDate':str(entry.expireDate.date()),
+            'gifIteration':entry.gifIteration,
             'deleteOnEnd':entry.deleteOnExpire,
             'displayTime':entry.displayTime
         })
@@ -337,15 +455,25 @@ def getContent(request):
 def upkeep():
     print("executing upkeep...")
     #Entry.objects.filter(pub_date__lte='2006-01-01')
-    files = Content.objects.all().order_by("expireDate")
-
+    # get the contents that are to be deleted on expire date
+    files = Content.objects.filter(deleteOnExpire=True).order_by("expireDate")
+    # get the current date for use later:
+    currentTime = timezone.now()
+    deletecount = 0
     if len(files) > 0:
-        print("purging expired content")
+        print("looking for expired content")
         for entry in files:
-            print(entry.id, ':', entry.imageName, entry.expireDate.date(), timezone.now().date())
-            #delete_worker(entry)
+            #print(entry.id, ':', entry.imageName, 'Expire:', entry.expireDate, 'Now:', currentTime)
+            if currentTime.date() >= entry.expireDate.date():
+                print("Deleting expored content: c%d"%(entry.id))
+                delete_worker(entry)
+                deletecount += 1 # increment the number of deleted things
 
+    if deletecount > 0:
+        # then recompile video
+        make_video_worker()
 
+# when the delete button is pressed, this happens:
 def delete_content(request):
     deletion = request.POST.getlist('Delete')
     log_applied_changes(deletion)
@@ -371,10 +499,10 @@ def delete_worker(dbEntry):
     except Exception as e:
         print('\n\n%s\n\n'%e)
 
-    try: # try delete file file
+    try: # try delete file file, if no file file, the an error will arise
         print("\ndelete:%s"%dbEntry.file)
         os.remove(dbEntry.file)
-    except Exception as e:
+    except Exception as e: # then handle it...
         print('\n%s\n\n'%e)
 
     # then delete the directory:
@@ -388,13 +516,13 @@ def delete_worker(dbEntry):
 # Initalize Scheduling with the Schedule module:
 
 def schedule_check():
-    #schedule.every(1).day.at("01:15").do(upkeep)
-    schedule.every(1).minute.do(upkeep).run() # remove run in production
+    # schedule upkeep to run every day at 03:30 in the morning
+    schedule.every().day.at('01:30').do(upkeep).run() # remove run in production
 
     while(True):
-        with open("./threadcheck.txt", "w+") as f:
-            f.write(str(time.time()))
-            f.close()
+        #with open("./threadcheck.txt", "w+") as f:
+        #    f.write(str(time.time()))
+        #    f.close()
         schedule.run_pending() # quirie the schedule
         time.sleep(1) # wait a bit, keep CPU load low
 

@@ -19,6 +19,7 @@ class Content(models.Model):
     startDate = models.DateTimeField("Start Date") # date the file is to begin
     expireDate = models.DateTimeField("Expire Date") # Date the file will be deleted form the system to save space
     displayTime = models.IntegerField("Display Time (Seconds)", default=5) # time to show the picture / document / etc.
+    gifIteration = models.IntegerField("GIF repeat count", default=1) # times to repeat the gif
     order = models.CharField("Special Order", default="-1", max_length=255) # the order in which to display, -1 = No special order
     useInShow = models.BooleanField("Use in Show", default=False)
     deleteOnExpire = models.BooleanField("Delete on Expire", default=True)
@@ -29,5 +30,6 @@ class Screen(models.Model):
     hostIP = models.CharField("Host Addr. or IP:", default="192.168.0.X", max_length=2000)
     width = models.IntegerField("Screen Width", default=1920)
     height = models.IntegerField("Screen Height", default=1080)
+    key = models.CharField("Key", max_length=48, default="FILL")
 #    startDate = models.DateTimeField("Start Date") # date to start showing
 #    endDate = models.DateTimeField("End Date") # date to stop showing

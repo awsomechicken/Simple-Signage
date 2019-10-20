@@ -6,7 +6,7 @@
       <td>
         <!-- Don't forget the CSRF token, otherwise Django won't be happy -->
         <form action="upload_file" enctype="multipart/form-data" method="post" target="_self">{% csrf_token %}
-          <input type="file" class="mui-btn mui-btn--small mui-btn--primary" name="fileupload" value="" accept="application/pdf, image/*, video/*"><!--multiple-->
+          <input type="file" class="mui-btn mui-btn--small mui-btn--primary" name="fileupload" value="" accept="application/pdf, image/*, video/mp4"><!--multiple-->
           <input type="submit" class="mui-btn mui-btn--small mui-btn--primary" name="filesubmit" value="Upload">
         </form>
       </td>

@@ -19,7 +19,7 @@ function addScreenSubmit(){
 }
 
 function deleteScreenConfirm(screen_id, csrf){
-  var yesno = confirm("Delete Screen: #"+screen_id+"?");
+  var yesno = confirm("Delete Screen: "+screen_id+"?");
   if(yesno){
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", "/deletescreen", true);
@@ -27,4 +27,9 @@ function deleteScreenConfirm(screen_id, csrf){
     xhttp.send("csrfmiddlewaretoken="+csrf+"&Delete="+screen_id);
     location.reload(true); // reload the page
   }
+}
+
+function addScreenVerify(){
+  // verify the settings for the newest screen
+  console.log("Stuff N' Things");
 }

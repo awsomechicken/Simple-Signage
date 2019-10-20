@@ -1,0 +1,53 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  {% include "preamble.html" %}
+
+  <body>
+    {% include "appbar.html" %}
+
+    <h1>About</h1>
+    <!--p>The SimpleSignage project is distributed under the GNUGPL v3.0 License, here is the boilerplate:</p-->
+      <div class="mui-container">
+        <div class="mui-panel">
+          <h3>Simple Signage License Notice</h3>
+          <p>Simple Signage is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p>
+          <p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>. </p>
+          <p"><img height="30em" src="{% static 'gplv3.png' %}" alt="gnugpl v3 badge"></p>
+        </div>
+
+        <div class="mui-panel">
+          <h3>About this Project</h3>
+          <p>This project is centered about the idea that digital signage shouldn't be expensive or difficult to use, and by using Python as a backend, with HTML, CSS, and JavaScript as the frontend, it can be improved apon by anyone who would like. This software can throretically be used with as many screens (displays, signboards, or whatever you want to call them) as you want. However, it does require a computationally-beefy PC to run the managment software, an 3rd-gen i5 or similar is recommneded for best results, as the server will be used to compile a video that will be played by the screens. </p>
+          <p><a href="https://www.github.com/awsomechicken/Simple-Signage">Link to the Simple-Signage GitHub</a></p>
+          <p><a href="https://www.github.com/awsomechicken/SimpleViewer">Link to the SimpleViewer GitHub</a></p>
+        </div>
+      </div>
+
+    <h1>Content</h1>
+
+    <h1>Screens</h1>
+      <div class="mui-container">
+        <div class="mui-panel">
+          <h3>Content how-to:</h3>
+          <ol>
+            <li>Upload content, one file at a time, or a collection as a zip file using the the file upload bar at the bottom of the 'Content' page.</li>
+            <p>Accepted formats: .pdf, .png, .jpg, .gif, and .mp4.</p>
+            <li>Preview your content by clicking on the icon, or ecit your settings by pressing the details button: <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="button">...</button></li>
+          </ol>
+          <p></p>
+        </div>
+
+        <div class="mui-panel">
+          <h3>Screens</h3>
+        </div>
+
+        <div class="mui-panel">
+          <h3>The players and setup</h3>
+        </div>
+      </div>
+    <h1>The Admin</h1>
+
+  </body>
+
+</html>

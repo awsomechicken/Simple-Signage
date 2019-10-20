@@ -1,33 +1,7 @@
 {% load static %}
-<header>
-  <meta charset="utf-8">
-  <title></title>
-  <link rel="stylesheet" href="{% static './css/master-material.css' %}">
-  <link rel="icon" href="{% static './icon.png' %}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="{% static './js/timeload.js' %}" charset="utf-8"></script>
-  <script src="{% static './js/screens.js' %}" charset="utf-8"></script>
-  <!-- Material UI: https://www.muicss.com/ -->
-  <link href="//cdn.muicss.com/mui-0.9.43/css/mui.min.css" rel="stylesheet" type="text/css"/>
-  <script src="//cdn.muicss.com/mui-0.9.43/js/mui.min.js"></script>
-  <!-- Boilerplate HTML: https://www.muicss.com/docs/v1/webcomponents/boilerplate-html -->
-  <script src="//cdn.muicss.com/mui-0.9.43/webcomponents/mui-webcomponents.js"></script>
-</header>
+{% include "preamble.html" %}
 <body>
-  <div class="mui-appbar" style="min-width:38em">
-    <table width="100%">
-      <tr>
-        <td align="left">
-          <a href="/" class="mui-btn mui-btn--primary">Content</a>
-          <a href="#"><button type="button" name="button" class="mui-btn mui-btn--primary" disabled>Screens</button></a>
-        </td>
-        <td align="right">
-          <a href="/admin" class="mui-btn mui-btn--primary">Admin</a>
-          <a href="{% url 'logout' %}" class="mui-btn mui-btn--primary">Logout</a>
-        </td>
-      </tr>
-    </table>
-  </div>
+  {% include "appbar.html" %}
   <p id="updateMe"></p>
 
   <table width="100%">
@@ -35,20 +9,23 @@
     <tr>
       <td align="center">
         <div style="width:35em" align="center">
-          <div class="mui-panel">
+          <div class="mui-panel" id="screen_{{ tv.id }}">
             <table align="center" width="98%">
               <tr>
                 <td style="width:25%">{{ tv.name }}</td>
                 <td style="width:32%">{{ tv.addr }}</td>
                 <td style="width:20%">{{ tv.width }}x{{ tv.height }}</td>
                 <td align="right">
-                  <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="DelBtn" onclick="deleteScreenConfirm('{{ tv.id }}', '{{ csrf_token }}')">Delete</button>
+                  <button class="mui-btn mui-btn--small mui-btn--danger" type="button" name="DelBtn" onclick="deleteScreenConfirm('{{ tv.name }}', '{{ csrf_token }}')">Delete</button>
                   <!--form class="mui-form" action="deletescreen" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="Delete" value="{{ tv.id }}">
                     <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" name="sub" value="Delete">
                   </form -->
                 </td>
+              </tr>
+              <tr>
+                <td colspan="4">Key : {{tv.key}}</td>
               </tr>
             </table>
           </div>
