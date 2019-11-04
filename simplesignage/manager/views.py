@@ -325,7 +325,7 @@ def check_new_video(request):
 
 # screen quiry for settings:
 def newSettingsForMe(request):
-    # ses 
+    # ses
     request.POST.getlist('auth_token')
 
     pass
