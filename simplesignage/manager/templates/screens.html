@@ -1,33 +1,7 @@
 {% load static %}
-<header>
-  <meta charset="utf-8">
-  <title></title>
-  <link rel="stylesheet" href="{% static './css/master-material.css' %}">
-  <link rel="icon" href="{% static './icon.png' %}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="{% static './js/timeload.js' %}" charset="utf-8"></script>
-  <script src="{% static './js/screens.js' %}" charset="utf-8"></script>
-  <!-- Material UI: https://www.muicss.com/ -->
-  <link href="//cdn.muicss.com/mui-0.9.43/css/mui.min.css" rel="stylesheet" type="text/css"/>
-  <script src="//cdn.muicss.com/mui-0.9.43/js/mui.min.js"></script>
-  <!-- Boilerplate HTML: https://www.muicss.com/docs/v1/webcomponents/boilerplate-html -->
-  <script src="//cdn.muicss.com/mui-0.9.43/webcomponents/mui-webcomponents.js"></script>
-</header>
+{% include "preamble.html" %}
 <body>
-  <div class="mui-appbar" style="min-width:38em">
-    <table width="100%">
-      <tr>
-        <td align="left">
-          <a href="/" class="mui-btn mui-btn--primary">Content</a>
-          <a href="#"><button type="button" name="button" class="mui-btn mui-btn--primary" disabled>Screens</button></a>
-        </td>
-        <td align="right">
-          <a href="/admin" class="mui-btn mui-btn--primary">Admin</a>
-          <a href="{% url 'logout' %}" class="mui-btn mui-btn--primary">Logout</a>
-        </td>
-      </tr>
-    </table>
-  </div>
+  {% include "appbar.html" %}
   <p id="updateMe"></p>
 
   <table width="100%">
@@ -35,22 +9,59 @@
     <tr>
       <td align="center">
         <div style="width:35em" align="center">
-          <div class="mui-panel">
-            <table align="center" width="98%">
+          <div class="mui-panel" id="screen_{{ tv.id }}">
+            <table align="center" width="100%">
               <tr>
-                <td style="width:25%">{{ tv.name }}</td>
-                <td style="width:32%">{{ tv.addr }}</td>
-                <td style="width:20%">{{ tv.width }}x{{ tv.height }}</td>
+                <td align="left">{{ tv.name }}</td>
                 <td align="right">
-                  <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="DelBtn" onclick="deleteScreenConfirm('{{ tv.id }}', '{{ csrf_token }}')">Delete</button>
-                  <!--form class="mui-form" action="deletescreen" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="Delete" value="{{ tv.id }}">
-                    <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" name="sub" value="Delete">
-                  </form -->
+                  <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="Details{{ tv.name }}" onclick="tsv('settings_{{tv.name}}')">Settings</button>
+                  <button class="mui-btn mui-btn--small mui-btn--danger" type="button" name="DelBtn" onclick="deleteScreenConfirm('{{ tv.name }}', '{{ csrf_token }}')">Delete</button>
                 </td>
               </tr>
+              <tr>
+                <td colspan="3">Key : {{tv.key}}</td>
+              </tr>
             </table>
+            <div id="settings_{{tv.name}}" style="display:none">
+              <div class="mui-divider"></div>
+              <table>
+                <form class="mui-form" action="tvSettingsChange" method="post">
+                  {% csrf_token %}
+                  <tr>
+                    <td style="width:32%">
+                      <input type="hidden" name="tv.id" value="{{ tv.id }}">
+                      <label for="address">Address:</label><br>
+                      <input type="text" name="tv.address" value="{{ tv.addr }}">
+                    </td>
+                    <td></td>
+                    <td>
+                      <label for="tv.width" class="mui--text-left">Dimensions:</label><br>
+                      <input type="number" name="tv.width" value="{{ tv.width }}" style="width:45pt">x<input type="number" name="tv.height" value="{{ tv.height }}" style="width:45pt">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label>TV Schedule</label>
+                      <div class="onoffswitch">
+                        <input class="onoffswitch-checkbox" type="checkbox" id="schedule{{tv.id}}" {% if tv.useSched %}checked{% endif %} value="{{tv.id}}" name="tv.useSched">
+                        <label class="onoffswitch-label" for="schedule{{tv.id}}"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <label for="vt.starttime">TV on at:</label><br>
+                      <input type="time" name="tv.starttime" value="{{tv.starttime}}">
+                    </td>
+                    <td>
+                      <label for="vt.endtime">TV off at:</label><br>
+                      <input type="time" name="tv.endtime" value="{{tv.endtime}}">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" colspan="3"><input type="submit" name="" value="Submit Changes" class="mui-btn mui-btn--small mui-btn--primary"></td>
+                  </tr>
+                </form>
+              </table>
+            </div>
           </div>
         </div>
       </td>

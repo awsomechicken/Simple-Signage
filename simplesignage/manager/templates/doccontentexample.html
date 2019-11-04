@@ -1,0 +1,93 @@
+{% load static %}
+{% block doccontentexample %}
+
+<table>
+  <tr>
+    <td>
+      <div class="mui-container">
+        <div class="docitems">
+          <form id="contentChangeForm" method="post">
+            <div class="items stuff">
+            <div class="mui-panel">
+              <table>
+                <tr>
+                  <td>
+                    <!-- always shown image and switch -->
+                    <table>
+                      <tbody align="center">
+                        <tr align="center">
+                          <td>
+                            <!-- Thumbnail Image -->
+                            <img class="content thumbnail" src="{% static '' %}/screenSizing.png" alt="static/screenSizing.png" onclick="picture_preview('{% static '' %}/screenSizing.png')">
+                            <input type="hidden" name="cid" value="1235">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table>
+                              <tr>
+                                <td>
+                                  <!-- use in show switch-->
+                                  <div class="onoffswitch">
+                                    <input class="onoffswitch-checkbox" type="checkbox" id="use1235" {% if file.use %}checked{% endif %} value="1235" name="use">
+                                    <label class="onoffswitch-label" for="use1235"></label>
+                                  </div>
+                                </td>
+                                <td><p>  </p></td>
+                                <td>
+                                  <!-- Ellipsies: show more... -->
+                                  <button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="button" onclick="tsv('content1235_settings')">...</button>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td> <!-- end of always shown -->
+                  <td id="content1235_settings" style="display:none">
+                    <!-- all other content settings -->
+                    <!--Delete: <input type="checkbox" name="Delete" value="1235">-->
+                    <table>
+                      <tr>
+                        <td>
+                          Display For:<br><!--class="content settings dt"-->
+                          <input type="number"  name="dispTime" value="10" min="1" max="300"> seconds
+                        </td>
+                        <td>
+                          Del on end:<br>
+                          <div class="onoffswitch">
+                            <input class="onoffswitch-checkbox" type="checkbox" id="doe1235" checked value="1235" name="deleteOnEnd">
+                            <label class="onoffswitch-label" for="doe1235"></label>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          Start Showing On:<br><!--class="content settings date"-->
+                          <input type="date"  name="sdate" value="2019-10-09">
+                        </td>
+                        <td>
+                          Stop Showing on:<br><!--class="content settings date"-->
+                          <input type="date"  name="edate" value="2019-10-16">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td>
+                          <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--danger" type="button" name="button"> Delete </button>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </div><!-- div of mui-panel -->
+          </div>
+          </form>
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
+{% endblock doccontentexample %}

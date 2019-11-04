@@ -39,13 +39,13 @@ def compile_video(show_items, output_path='./manager/static/shows/', frame_rate=
     # items: {item 1, item 2, ...}
     print("Compiling Video...")
 
-    name = "Show_%d"%(int(time.time()))
+    name = "Show_%d.mp4"%(int(time.time()))
     print(name)
 
     if output_path.rindex('/') == len(output_path)-1:
-        showPath = "%s%s.mp4"%(output_path, name)
+        showPath = "%s%s"%(output_path, name)
     else:
-        showPath = "%s/%s.mp4"%(output_path, name)
+        showPath = "%s/%s"%(output_path, name)
 
     video_clips = [] # clip array, will use a SHIT LOAD of memory, you're editing a video...
 
@@ -55,7 +55,7 @@ def compile_video(show_items, output_path='./manager/static/shows/', frame_rate=
             #print("file: ", item.file, "Exists")
             #print(os.listdir(item.file[0:item.file.rindex('/')+1]))
 
-            if ".mp4" in  item.file.lower():
+            if ".mp4" in item.file.lower():
                 # Use VideoFileClip class
                 vclip = VideoFileClip(item.file)
                 # resize the height to 1080p
@@ -65,9 +65,21 @@ def compile_video(show_items, output_path='./manager/static/shows/', frame_rate=
                 if w > 1920:
                     vclip = vclip.resize(width=1920)
                     print("resize width")
-                #vclip.resize(height=1080)
-                #vclip.set_fps(frame_rate)
                 video_clips.append(vclip)
+
+            elif ".gif" in item.file.lower():
+                # Use VideoFileClip class
+                vclip = VideoFileClip(item.file)
+                # resize the height to 1080p
+                vclip = vclip.resize(height=1080)
+                # then see if it is too wide
+                (w, h) = vclip.size
+                if w > 1920:
+                    vclip = vclip.resize(width=1920)
+                    print("resize width")
+                #vclip.set_fps(frame_rate)
+                for gi in range(0, item.gifIteration):
+                    video_clips.append(vclip)
 
             elif ".png" or ".jpg" in item.file.lower():
                 # Use ImageClip class
@@ -95,8 +107,8 @@ def compile_video(show_items, output_path='./manager/static/shows/', frame_rate=
 
     final_clip = concatenate_videoclips(video_clips, method="compose")
     final_clip.resize(height=1080)
-    final_clip.write_videofile(filename=showPath, fps=frame_rate, audio=False)
-    return showPath
+    final_clip.write_videofile(filename=showPath, fps=frame_rate, audio=False, threads=4)
+    return showPath, name
 
 
 if __name__ == "__main__":

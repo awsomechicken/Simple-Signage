@@ -7,7 +7,8 @@
       <td>
         <div class="items">
           <!-- action="apply_changes" method="post" target="#"  -->
-          <form id="contentChangeForm">
+          <form id="contentChangeForm" action="apply_changes" method="post">
+            <br>
             {% csrf_token %}
           <!-- Also, don't forget to use the "file.thing" format to access data, duh-->
           <!-- checkbox checked and not-checked tags include the closing bracket for the input-->
@@ -35,7 +36,7 @@
                                 <td>
                                   <!-- use in show switch-->
                                   <div class="onoffswitch">
-                                    <input class="onoffswitch-checkbox" type="checkbox" id="use{{file.cid}}" {% if file.use %}checked{% endif %} value="{{file.cid}}" name="use" onchange="submitContentChanges()">
+                                    <input class="onoffswitch-checkbox" type="checkbox" id="use{{file.cid}}" {% if file.use %}checked{% endif %} value="{{file.cid}}" name="use">
                                     <label class="onoffswitch-label" for="use{{file.cid}}"></label>
                                   </div>
                                 </td>
@@ -57,31 +58,41 @@
                     <table>
                       <tr>
                         <td>
-                          Show Time:<br><!--class="content settings dt"-->
-                          <input type="number"  name="dispTime" value="{{file.displayTime|default:15}}" min="1" max="300" onchange="submitContentChanges()"><b>s</b>
+                          {% if ".jpg" in file.filePath or ".JPG" in file.filePath or ".png" in file.filePath or ".PNG" in file.filePath %}
+                            Display For:<br><!--class="content settings dt"-->
+                            <input type="number"  name="dispTime" value="{{file.displayTime|default:5}}" min="1" max="300"> seconds
+                          {% else %}
+                            <input type="hidden"  name="dispTime" value="{{file.displayTime|default:5}}" min="1" max="300">
+                          {% endif %}
+                          {% if ".gif" in file.filePath%}
+                            Play GIF:<br><!--class="content settings dt"-->
+                            <input type="number"  name="gifIteration" value="{{file.gifIteration}}" min="1" max="300"> times
+                          {% else %}
+                            <input type="hidden"  name="gifIteration" value="{{file.gifIteration}}" min="1" max="300">
+                          {% endif %}
                         </td>
                         <td>
                           Del on end:<br>
                           <div class="onoffswitch">
-                            <input class="onoffswitch-checkbox" type="checkbox" id="doe{{file.cid}}" {% if file.deleteOnEnd %}checked{% endif %} value="{{file.cid}}" name="deleteOnEnd" onchange="submitContentChanges()">
+                            <input class="onoffswitch-checkbox" type="checkbox" id="doe{{file.cid}}" {% if file.deleteOnEnd %}checked{% endif %} value="{{file.cid}}" name="deleteOnEnd">
                             <label class="onoffswitch-label" for="doe{{file.cid}}"></label>
                           </div>
                         </td>
                       </tr>
                       <tr>
                         <td>
-                          Start Date:<br><!--class="content settings date"-->
-                          <input type="date"  name="sdate" value="{{file.startDate}}" onchange="submitContentChanges()">
+                          Start Showing On:<br><!--class="content settings date"-->
+                          <input type="date"  name="sdate" value="{{file.startDate}}">
                         </td>
                         <td>
-                          End Date:<br><!--class="content settings date"-->
-                          <input type="date"  name="edate" value="{{file.endDate}}" onchange="submitContentChanges()">
+                          Stop Showing on:<br><!--class="content settings date"-->
+                          <input type="date"  name="edate" value="{{file.endDate}}">
                         </td>
                       </tr>
                       <tr>
                         <td></td>
                         <td>
-                          <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" type="button" name="button" onclick="deleteContent({{file.cid}}, '{{csrf_token}}')"> Delete </button>
+                          <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--danger" type="button" name="button" onclick="deleteContent({{file.cid}}, '{{csrf_token}}')"> Delete </button>
                         </td>
                       </tr>
                     </table>
@@ -99,17 +110,14 @@
       <td>
         <div class="items apply">
           <div class="mui-divider"></div>
-          <!--<button class="mui-btn mui-btn--small mui-btn--primary" onclick="submitContentChanges()">Apply Changes</button>
-            Save your changes to your database-->
-
-          <form action="makevideo" method="post">{% csrf_token %}
-            <input class="mui-btn mui-btn--small mui-btn--primary" type="submit" name="go" value="Compile Video ">
-            Concatenate your photos and videos into a single video and send it to your screens (this will take a while)
-          </form>
+          <button class="mui-btn mui-btn--small mui-btn--primary" onclick="submitContentChanges()">Apply Changes</button> Save your changes to your database
+          <br>
+          <button id="compileVideo" class="mui-btn mui-btn--small mui-btn--primary" onclick="compileVideo('{{csrf_token}}')">Compile Video</button>
+          Arrange your videos, photos, and documents into a single file, then send them to your screens. This <strong>will</strong> take a while.
         </div>
       </td>
     </tr>
   </table>
-
-  <br>
+  <!-- bottom spacing to allow for the footer -->
+  <br><br><br>
 {% endblock imageList %}

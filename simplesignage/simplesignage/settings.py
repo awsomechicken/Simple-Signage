@@ -25,10 +25,10 @@ SECRET_KEY = 'zv8tt5)9+a6uy%2vs@=)9_8*m!o!8!uur)xwn3&w%bbr!xoxk4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','::1','192.168.1.76']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','192.168.1.90', '192.168.1.4', 'damnserver.rowdysanford.com']
 #ALLOWED_HOSTS = ['*']
 
-
+6
 # Application definition
 
 INSTALLED_APPS = [

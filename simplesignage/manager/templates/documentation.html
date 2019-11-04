@@ -1,0 +1,117 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  {% include "preamble.html" %}
+
+  <body>
+    {% include "appbar.html" %}
+    <br>
+    <!--p>The SimpleSignage project is distributed under the GNUGPL v3.0 License, here is the boilerplate:</p-->
+      <div class="mui-container">
+        <div class="mui-panel">
+          <h3>Simple Signage License Notice</h3>
+          <p>Simple Signage is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p>
+          <p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>. </p>
+          <p><img height="30em" src="{% static 'gplv3.png' %}" alt="gnugpl v3 badge"></p>
+        </div>
+
+        <div class="mui-panel">
+          <h2>About this Project</h2>
+          <p>This project is centered about the idea that digital signage shouldn't be expensive or difficult to use, and by using Python as a backend, with HTML, CSS, and JavaScript as the frontend, it can be improved apon by anyone who would like. This software can throretically be used with as many screens (displays, signboards, or whatever you want to call them) as you want. However, it does require a computationally-beefy PC to run the managment software, an 3rd-gen i5 or similar is recommneded for best results, as the server will be used to compile a video that will be played by the screens. </p>
+          <p><a href="https://www.github.com/awsomechicken/Simple-Signage">Link to the Simple-Signage GitHub</a></p>
+          <p><a href="https://www.github.com/awsomechicken/SimpleViewer">Link to the SimpleViewer GitHub</a></p>
+
+          <h3>Things used in building this application:</h3>
+          <ul>
+            <li>Python: <a href="https://www.python.org">python.org</a> </li>
+            <li>Django: <a href="https://www.djangoproject.com/">www.djangoproject.com</a> </li>
+            <li>MoviePy: <a href="https://zulko.github.io/moviepy/">GitHub Wiki</a> </li>
+            <li>Python Image Library (Pillow): <a href="https://pillow.readthedocs.io/en/stable/">PIL Wiki</a> </li>
+            <li>Pdf2Image:  <a href="https://github.com/Belval/pdf2image">GitHub</a> </li>
+            <li>MUI-CSS: <a href="https://www.muicss.com/">www.muicsss.com</a></li>
+            <li>Google AJAX API</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mui-container">
+        <div class="mui-panel">
+          <h3>Content how-to:</h3>
+          {% include "doccontentexample.html" %}
+          <ol>
+            <li>Upload content, one file at a time, or a collection as a zip file using the the file upload bar at the bottom of the 'Content' page.</li>
+            <p>Accepted formats: .pdf, .png, .jpg, .gif, and .mp4. <em> Hint: </em> by making content the same aspect ratio of your screens, it will remove the black bars on the sides of the screen, and possibly make the content nicer to look at.</p>
+            <li>Preview your content by clicking on the icon, or edit your settings by pressing the <em>details</em> button</li>
+            <li>The settings are as follows:</li>
+              <ul>
+                <li>Delete on End : When the enddate is reached, the content item will be deleted ffrom the server and the video automatically recompiles and is deployed to the displays</li>
+                <li>End Date : The date where you want your content to be removed from the screens, this setting isn't used if <em> Delete on End </em> is disabled.</li>
+                <li>Start Date: The date when the content was uploaded, mainly for your reference, and for future development</li>
+                <li>Display Time: how long, in seconds, to display an image <b>This is only visable for png or jpg image content</b></li>
+                <li>Play GIF: number of times to replay a GIF, max value of 300 times. <b>This is only visable for GIF content</b></li>
+                <li>Delete: Deletes the content, you are asked to confirm before the delete instruiction goes to the server, after you delete the content you can either click the 'compile video' button or let the server recompile when the next content item expires.</li>
+              </ul>
+            <li>
+              <table>
+                <tr>
+                  <td>
+                    <div class="onoffswitch">
+                      <input class="onoffswitch-checkbox" type="checkbox" id="useSetting" >
+                      <label class="onoffswitch-label" for="useSetting"></label>
+                    </div>
+                  </td>
+                  <td>Will enable or disable the content in the show, this setting isn't hidden in the details menu so you can see when the content is enabled. </td>
+                </tr>
+              </table>
+            </li>
+            <li><button class="mui-btn mui-btn--small mui-btn--primary" type="button" name="button">...</button> This is the details button, it shows and hides the content settings menu.</li>
+            <li><button class="mui-btn mui-btn--small mui-btn--primary">Apply Changes</button> Applies any chages you've made to the content in the details menu</li>
+            <li><button id="compileVideo" class="mui-btn mui-btn--small mui-btn--primary">Compile Video</button> Starts the video compile on the server. This operation will take a while, sometimes tens of minutes, possibly an hour or two. after you see the "cat and yarn" loading screen, you can close the tab or browser and the system will deploy the content to the screens when it is done.</li>
+          </ol>
+          <p></p>
+        </div>
+
+        <div class="mui-panel">
+          <h3>Screens</h3>
+          <p>This menu is used to authorize individual screens to connect to the server and pull content. </p>
+          <h5>How to add screens:</h5>
+          <ol>
+            <li>Click the add button: <button type="button" name="add screen" class="mui-btn mui-btn--small mui-btn--fab mui-btn--primary" id="addScreenBtn">+</button></li>
+            <li>Name your screen; it's suggested to name the screen(s) such that one can easily identify their location</li>
+            <p><em>ie: North Lobby, Building 1 Rm 234, Conference Room, etc.</em></p>
+            <li>Input your raspberry pi player's IP address or hostname, this is used for security purposes</li>
+            <li>Input your screen resolution, {height}x{width}</li>
+            <li>Click Save or Cancel your screen.</li>
+          </ol>
+          <p>Once you click <em>Save</em>, the screen will show a 'key,' this is used to authorize the screen, without this your screen will be unable to connect to the server and get its content. If you delete a screen in the <em>Screens</em> menu, the raspberry pi acting as the player will be unable to connect as though it was never authorized. </p>
+
+          <h3>The players and setup</h3>
+          <p>This is a guide on how to setup the Raspberry Pi players for the screens</p>
+          <h4>Python Prerequisites:</h4>
+          <ul>
+            <li>OMXPlayer-Wrapper, See: <a href="https://python-omxplayer-wrapper.readthedocs.io/en/latest/">https://python-omxplayer-wrapper.readthedocs.io/en/latest/</a></li>
+            <p><code>pip3 install omxplayer-wrapper</code> </p>
+            <li>Python CEC-Daemon Library, See: <a href="https://github.com/trainman419/python-cec/">https://github.com/trainman419/python-cec/</a> </li>
+            <p><code>pip3 install cec</code> if that doesn't work, you will need to install from the master git: <code>pip3 install git+https://github.com/trainman419/python-cec.git@0.2.7#egg=cec</code> </p>
+            <li>And these: <code>time, datetime, pytz, os, sys, requests, random, string, shutil, configparser</code> </li>
+          </ul>
+
+          <h4>Installation:</h4>
+          <ol>
+            <li>Clone the Github Repository to the base user directory:</li>
+            <p> <code>git clone https://github.com/awsomechicken/simpleviewer</code> </p>
+            <li>Change into the directory and run the setup script:</li>
+            <p> <code>sudo ./simpleviewer/setup.py</code> </p>
+            <li>Once the setup script has finished, configure the config file with the server address and the authentication key from the 'Screens' menu</li>
+            <p> <code>nano ./simpleviewer/config</code> </p>
+            <li>Reboot the raspberry pi and you are good to go.</li>
+          </ol>
+        </div>
+
+      </div>
+
+    <h1>The Admin</h1>
+
+  </body>
+
+</html>
