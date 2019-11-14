@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader, context
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -324,32 +324,45 @@ def check_new_video(request):
     return HttpResponse(curr_show) # send a response containing the name of the show
 
 # screen quiry for settings:
+@token_authorization
 def newSettingsForMe(request):
     # ses
-    request.POST.getlist('auth_token')
+    tok = request.GET.getlist('auth_token')[0]
 
-    pass
+    tv = Screen.objects.filter(key__exact = tok)[0]
+
+    print(tv)
+
+    tvSettings = {
+        'width' : tv.width,
+        'height': tv.height,
+        'useSched' : tv.useSchedule,
+        'startTime': tv.startTime,
+        'endTime' : tv.endTime
+    }
+
+    return JsonResponse(tvSettings)
 
 # mkae changes to the tv settings
 def tvSettingsChange(request):
     tvId = request.POST.getlist('tv.id')[0]
     tvAdd = request.POST.getlist('tv.address')[0]
-    tvWidth = request.POST.getlist('tv.width')[0]
-    tvHeight = request.POST.getlist('tv.height')[0]
+    #tvWidth = request.POST.getlist('tv.width')[0]
+    #tvHeight = request.POST.getlist('tv.height')[0]
     try: # boolean values don't exist if they aren't checked...
         tvUseSched = request.POST.getlist('tv.useSched')[0]
     except:
         tvUseSched = 0 # do a 0, it makes things easier
     tvStartTime = request.POST.getlist('tv.starttime')[0]
     tvEndTime = request.POST.getlist('tv.endtime')[0]
-
-    print(tvId, tvAdd, int(tvWidth), int(tvHeight), tvUseSched, tvStartTime, tvEndTime)
+    # int(tvWidth), int(tvHeight),
+    print(tvId, tvAdd, tvUseSched, tvStartTime, tvEndTime)
 
     # updae / add information:
     tv = Screen.objects.filter(id__exact=tvId)[0]
     tv.hostIP = tvAdd # set TV address
-    tv.width = int(tvWidth)
-    tv.height = int(tvHeight)
+    #tv.width = int(tvWidth)
+    #tv.height = int(tvHeight)
     if int(tvUseSched) > 0:
         tv.useSchedule = True # boolean Value, I don't know how this uses
     else:
@@ -423,7 +436,7 @@ def video_compile_status(request):
 @login_required # Apply selection of images
 def apply_changes(request):
     changes = request.POST
-    log_applied_changes(changes)
+    #log_applied_changes(changes)
     cid = changes.getlist('cid')
     sdate = changes.getlist('sdate')
     edate = changes.getlist('edate')
@@ -520,6 +533,7 @@ def getContent(request):
         #print(entry.id, ':', entry.imageName, entry.expireDate.date())
         content['File'].append({
             'cid':entry.id,
+            # strip off some of the non-pertanant information in the files and images
             'path':entry.imageName.replace("./manager/static/content/", ""),
             'filePath':entry.file.replace("./manager/static/content/", ""),
             'use':entry.useInShow,
@@ -559,7 +573,7 @@ def upkeep():
 # when the delete button is pressed, this happens:
 def delete_content(request):
     deletion = request.POST.getlist('Delete')
-    log_applied_changes(deletion)
+    #log_applied_changes(deletion)
     # get the content we want to delete
     for dele in deletion:
         remove = Content.objects.get(id__exact=dele)

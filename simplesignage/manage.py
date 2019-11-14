@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# Make the thing python3 to do ./prog.py type things
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
