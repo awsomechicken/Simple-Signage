@@ -4,10 +4,15 @@ from django.template import loader, context
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 # http://code.djangoproject.com/browser/django/trunk/django/contrib/admin/views/decorators.py
-from django.contrib.admin.views.decorators import staff_member_required
+#from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from django.views.static import serve
+# password reset things
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+# non-django related things:
 from threading import Thread
 from . import urls
 import os, time, datetime, json, random, string, shutil
@@ -48,6 +53,24 @@ Video_Compiling = False
 
 #_______________________________________________________________________________
 # primary interface stuffs:
+# password reset form
+@login_required
+def passwd_change(request):
+    # code from: https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('password_change')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', {'form': form})
+
 #@login_required
 ###@staff_member_required
 def index(request):

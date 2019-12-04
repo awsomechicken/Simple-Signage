@@ -21,5 +21,7 @@ urlpatterns = [
     path('newSettingsForTv', views.newSettingsForMe, name='get new settings for tv'),
     path('tvSettingsChange', views.tvSettingsChange, name='Change TV Settings'),
     # Authentication forms... don't forget the quotes dipshit...
-    path('accounts/', include('django.contrib.auth.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    # Password Reset form:
+    path('password_change/', views.passwd_change, name='password_change'),
 ]
