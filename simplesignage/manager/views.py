@@ -3,6 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader, context
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+# http://code.djangoproject.com/browser/django/trunk/django/contrib/admin/views/decorators.py
+from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from django.views.static import serve
@@ -47,12 +49,14 @@ Video_Compiling = False
 #_______________________________________________________________________________
 # primary interface stuffs:
 #@login_required
+@staff_member_required
 def index(request):
     resp = HttpResponse("<h1>Error 909: Development Whilst Drunk Occured</h1><h2>apologies for any inconveniece</h2><hr>")
     return resp, redirect('/')
 
 # home / main data interface
 @login_required
+@staff_member_required
 def home(request):
     #print("Home", str(request.META['REMOTE_ADDR']))
     # content is passed into render, and can be parsed by the template
@@ -69,6 +73,8 @@ def documentation(request):
 #_______________________________________________________________________________
 # File dealings:
 @login_required
+@staff_member_required
+
 def upload_file(request):
     if request.method == 'POST':
         try: # to mitigate the no file found error
@@ -236,6 +242,7 @@ def token_authorization(func):
 
 
 @login_required
+@staff_member_required
 def screens(request):
     print("SCREENS!")
 
@@ -270,6 +277,7 @@ def screen_active_hours(request):
     print("active hours")
 
 @login_required
+@staff_member_required
 def newScreen(request):
     # save a new screen
     screen = request.POST
@@ -286,6 +294,7 @@ def newScreen(request):
     return redirect('/screens')
 
 @login_required
+@staff_member_required
 def deleteScreen(request):
     # Delete a screen db entry
     screenid = request.POST.getlist("Delete")[0]
@@ -386,6 +395,7 @@ def get_mp4_thumbnail(file="./static/content/animals-Imgur.mp4"):
     return thumbnail
 
 @login_required
+@staff_member_required
 def make_video(request):
 
     videoFilePath = make_video_worker()
@@ -433,7 +443,8 @@ def video_compile_status(request):
 
 #_______________________________________________________________________________
 # Settings Managemnt Routines:
-@login_required # Apply selection of images
+@login_required
+@staff_member_required # Apply selection of images
 def apply_changes(request):
     changes = request.POST
     #log_applied_changes(changes)
@@ -515,6 +526,7 @@ def log_applied_changes(changes):
         print("Whoops")
 
 @login_required
+@staff_member_required
 def getContent(request):
     #print(File.objects.all())
     rem_addr = request.META.get('REMOTE_ADDR')
