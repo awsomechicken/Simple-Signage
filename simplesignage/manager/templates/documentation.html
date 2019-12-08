@@ -86,8 +86,8 @@
           <p>Once you click <em>Save</em>, the screen will show a 'key,' this is used to authorize the screen, without this your screen will be unable to connect to the server and get its content. If you delete a screen in the <em>Screens</em> menu, the raspberry pi acting as the player will be unable to connect as though it was never authorized. </p>
 
           <h3>The players and setup</h3>
-          <p>This is a guide on how to setup the Raspberry Pi players for the screens</p>
-          <h4>Python Prerequisites:</h4>
+          <p>Please follow the guide on the  GitHub page for the player software: <a href="https://github.com/awsomechicken/SimpleViewer">https://github.com/awsomechicken/SimpleViewer</a> </p>
+          <!--h4>Python Prerequisites:</h4>
           <ul>
             <li>OMXPlayer-Wrapper, See: <a href="https://python-omxplayer-wrapper.readthedocs.io/en/latest/">https://python-omxplayer-wrapper.readthedocs.io/en/latest/</a></li>
             <p><code>pip3 install omxplayer-wrapper</code> </p>
@@ -105,12 +105,26 @@
             <li>Once the setup script has finished, configure the config file with the server address and the authentication key from the 'Screens' menu</li>
             <p> <code>nano ./simpleviewer/config</code> </p>
             <li>Reboot the raspberry pi and you are good to go.</li>
+          </ol-->
+        </div>
+
+        {% if request.user.is_superuser %}
+        <div class="mui-panel">
+          <h3>The Admin</h3>
+          <p>To add users:</p>
+          <ol>
+            <li>Goto the admin page by clicking on the "ADMIN" button</li>
+            <li>Under Authentication and Authorization click the Add button next to the Users entry</li>
+            <li>enter the username and password, the user can change it later</li>
+            <li>If you want the user to be able to add more users, scroll down the the 'Permissions' section and check the "Superuser status" box.</li>
+            <li>Scroll down to the botton and click save</li>
           </ol>
         </div>
+        {% endif %}
 
       </div>
 
-    <h1>The Admin</h1>
+
 
   </body>
 

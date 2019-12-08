@@ -1,4 +1,8 @@
 __pycache__
 *.sqlite3
-simplesignage/manager/static/content/*
-simplesignage/manager/static/shows/*
+simplesignage/manager/static/content/c*
+simplesignage/manager/static/content/*.jpg
+simplesignage/manager/static/content/*.jpeg
+simplesignage/manager/static/content/*.png
+simplesignage/manager/static/content/*.gif
+simplesignage/manager/static/shows/*.mp4
