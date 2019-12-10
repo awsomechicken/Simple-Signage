@@ -486,7 +486,7 @@ def apply_changes(request):
         item.startDate = sdate[i]
         item.expireDate = edate[i]
         try:
-            dt = dispTime[i]
+            dt = int(dispTime[i])
             if dt < 301:
                 item.displayTime = dt
             else:
